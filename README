@@ -1,0 +1,6 @@
+A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman&Cousins upper limits and sensitivities.  
+
+So far, there is a script for merging simulated log-likelihood curves from independent analyses as well as a simple Neyman sensitivity script. TODO: Implement F&C limit calculation (possibly starting from a script by Martin) and some more data visualization features for the sensitivity calculation to verify the TS distributions.
+
+Note that if running with ipython, the args can properly be passed to a script like merge.py by using an extra "--" between args, e.g.:
+ipython merge.py -- test_data/results1.txt test_data/results2.txt --interp --diagnostic

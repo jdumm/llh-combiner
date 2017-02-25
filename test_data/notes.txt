@@ -1,0 +1,9 @@
+# To take a single set of trials (results.txt) and split it into two parts (for testing), do the following:
+
+awk 'NR % 2==1 {print}' results.txt  > results1.txt
+awk 'NR % 2==0 {print}' results.txt  > results2.txt
+
+Then simply copy the header of results.txt into results2.txt.  Now you have two independent data sets.
+
+
+gzip'ing these text files gives a reduction in file size by about a factor of 5.
