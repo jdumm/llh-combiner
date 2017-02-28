@@ -8,7 +8,7 @@ import numpy as np
 
 r"""Read and display test statistics in sensitivity calculation. Assumes input file has 3 columns: True Flux, Best-fit Flux, and (joint) TS.
 """
-# Flux are in units [1/GeV/cm^2/s]
+# Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
 # And TS should be -2*log( likelihood ) [unitless]
 
 def main(infile):
@@ -18,29 +18,38 @@ def main(infile):
 		print "Error: Input file {} missing.".format(infile)
 		return 0
 
-	print('Sorted list of unique fluxes:')
 	# Find median of the null hypothesis
 	ts_null = data[data[:,0]==0.0][:,2] # Isolate the list of all TS values for flux==0
 	median_bg = np.median(ts_null)
 	print('median of the background-only trials is {}'.format(median_bg))
 
+	plt.figure()
+	plt.yscale('log')
+	plt.xlabel('TS')
+	plt.ylabel('Rate/bin')
+	bins=np.arange(0, 10, 1)
 	unique_fluxes = np.unique(data[:,0]) # sorted
+	print('Sorted list of unique fluxes: {})'.format(unique_fluxes))
 	ps = []
 	for flux in unique_fluxes:
 		ts = data[data[:,0]==flux][:,2] # Isolate the list of all TS values for this True Flux
+		plt.hist(ts,bins,histtype='step')
 		p = float(len(ts[ts>median_bg]))/float(len(ts)) # count how many have TS higher than the median from background
 		print('number of entries with flux {} is {} with {}% over the median from background.'.format(flux,len(ts),p*100))
 		ps.append(p)
-		
+
 	# Find the 90% crossing point using the spline interpolation
 	xs = np.linspace(unique_fluxes[0],unique_fluxes[-1:],1000)
-	spl = UnivariateSpline(unique_fluxes, ps, s=0.5)
+	spl = UnivariateSpline(unique_fluxes, ps, k=3, s=0.1)
 	for x in xs:
 		if (spl(x) > 0.9):
 			sens = x
 			break
+	print('\nSensitivity is: {:0.3f}'.format(sens))
 
 	plt.figure()
+	plt.xlabel('Flux')
+	plt.ylabel('Fraction with TS > background median')
 	plt.plot(unique_fluxes,ps,'ko',ms=5)
 	plt.plot(xs,spl(xs),'r',lw=3)
 	ax = plt.gca()
@@ -51,7 +60,6 @@ def main(infile):
         verticalalignment='top', horizontalalignment='right',
         transform=ax.transAxes,
         color='g', fontsize=18)
-
 	plt.show()
 
 

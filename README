@@ -1,6 +1,25 @@
 A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman&Cousins upper limits and sensitivities.  
 
-So far, there is a script for merging simulated log-likelihood curves from independent analyses as well as a simple Neyman sensitivity script. TODO: Implement F&C limit calculation (possibly starting from a script by Martin) and some more data visualization features for the sensitivity calculation to verify the TS distributions.
+An example workflow looks like this:
+1) Each individual analysis generates 
+
+So far, there is a script for merging simulated log-likelihood curves from independent analyses as well as a simple Neyman sensitivity script.
+TODO: Implement F&C limit calculation (possibly starting from a script by Martin) and some more data visualization features for the sensitivity calculation to verify the TS distributions.
 
 Note that if running with ipython, the args can properly be passed to a script like merge.py by using an extra "--" between args, e.g.:
 ipython merge.py -- test_data/results1.txt test_data/results2.txt --interp --diagnostic
+
+So an example usage might be:
+gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
+ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/MyFile.txt test_data/merged_7yrICmuons_KRAg5e7_MyFile.txt --interp
+ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_MyFile.txt 
+
+An example for running one set of analysis results through to get a sensitivity using a ‘dummy’ file name.  You could try this with existing data in the GitHub project just to see if everything works:
+gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
+ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt dummy test_data/merged_7yrICmuons_KRAg5e7_dummy.txt --interp
+ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_dummy.txt 
+
+To look at a plot of how the merging is working for each trial, use the --diagnostic option (you may have to force quit the process if you don't want to go through them all).
+
+ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt dummy test_data/merged_7yrICmuons_KRAg5e7_dummy.txt --interp --diagnostic
+
