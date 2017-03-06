@@ -117,7 +117,7 @@ def main(infile1, infile2, outfile, interpolate=False, diagnostic=False):
 				ax = plt.gca()
 				ymin, ymax = ax.get_ylim()
 				plt.plot([maxflux,maxflux],[ymin,ymax], 'g', lw=3)
-				ax.text(0.75, 0.15, '(maxflux,maxllh): ({:0.2f},{:0.2f})'.format(maxflux,maxllh),verticalalignment='top', horizontalalignment='right', transform=ax.transAxes, color='g', fontsize=18)
+				ax.text(0.15, 0.15, '(maxflux, maxllh) = ({:0.2e}, {:0.2e})'.format(maxflux,maxllh),verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
 				plt.show()
 				#diagnostic = False
 
