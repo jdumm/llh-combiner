@@ -12,58 +12,45 @@ r"""Shuffle a scrambled-trial results file to simpy re-order for later merging. 
 # And TS should be -2*log( likelihood ) [unitless]
 
 # Returns a list of tuples indicating a range over which the flux is constant
-def find_change_indices(idata):
-	unique_fluxes = np.unique(idata[:,0])
-	prev_flux = idata[0][0]
+def find_change_indices(data):
+	unique_fluxes = np.unique(data[:,0])
+	prev_flux = data[0][0]
 	start_index = 0
 	index = 0
 	change_points = []
-	for row in idata:
+	for row in data:
 		if (row[0] != prev_flux): # found change point
-			change_points.append([start_index,index-1])
+			change_points.append([start_index,index])
 			start_index = index
 		prev_flux = row[0]
 		index = index+1
-	change_points.append([start_index,len(idata)-1]) # last range
+	change_points.append([start_index,len(data)]) # last range
 	print("Found these ranges of constant flux: {}".format(change_points))
 	return change_points
 
-# Shuffle each range of the text file where the flux is constant
-# This got a little ugly requiring the deepcopy...
-def shuffle(idata, odata, r): # r is a tuple (low-, high-index) for a given flux range
-	# This array maps the original index in idata to a new index in odata
-	mapping = range(r[0],r[1]+1)
-	ran.shuffle(mapping)
-	index=0
-	for n in range(r[0],r[1]+1):
-		odata[n] = idata[mapping[index]]
-		index = index+1
-	return odata
-	
 
 def main(infile, outfile):
 	try:
 		f = open(infile,'r')
 		h = f.readline().split() # header
 		f.close()
-		idata = np.loadtxt(infile,skiprows=1)
-		order = idata[:,0].argsort() # get index based on first column
-		idata = idata[order] # now ordered by flux
-		odata = copy.deepcopy(idata) # shuffled output
+		data = np.loadtxt(infile,skiprows=1)
+		order = data[:,0].argsort() # get index based on first column
+		data = data[order] # now ordered by flux
 	except IOError:
 		print "Error: Input file {} missing.".format(infile)
 		return 0
 
 	# Identify ranges where fluxes are constant
-	change_points = find_change_indices(idata)
+	change_points = find_change_indices(data)
 
 	# Now shuffle inside of the individual flux ranges
 	for r in change_points:
-		shuffle(idata, odata, r)
+		subarray = data[r[0]:r[1]] # slice it and assign to a shallow copy
+		np.random.shuffle(subarray) # editing 'subarray' edits the original 'data'
 		
-	#np.savetxt(outfile, odata, header=str(h.split()))
 	try:
-		np.savetxt(outfile, odata,fmt='%0.2e', header='{} {} {}'.format(h[0],h[1],h[2]), comments='')
+		np.savetxt(outfile, data, fmt='%0.2e', header='{} {} {}'.format(h[0],h[1],h[2]), comments='')
 	except IOError:
 		print("Error: Unable to open output file {}.".format(outfile))
 		return 0
