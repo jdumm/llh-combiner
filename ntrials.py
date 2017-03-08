@@ -15,22 +15,22 @@ def main(infile):
 		f = open(infile,'r')
 		h = f.readline().split() # header
 		f.close()
-		idata = np.loadtxt(infile,skiprows=1)
-		order = idata[:,0].argsort() # get index based on first column
-		idata = idata[order] # now ordered by flux
+		data = np.loadtxt(infile,skiprows=1)
+		order = data[:,0].argsort() # get index based on first column
+		data = data[order] # now ordered by flux
 
 	except IOError:
 		print "Error: Input file {} missing.".format(infile)
 		return 0
 
 	# Identify ranges where fluxes are constant and count trials at each
-	unique_fluxes = np.unique(idata[:,0])
-	prev_flux = idata[0][0]
+	unique_fluxes = np.unique(data[:,0])
+	prev_flux = data[0][0]
 	start_index = 0
 	index = 0
 	fluxes = []
 	count_at_fluxes = []
-	for row in idata:
+	for row in data:
 		if (row[0] != prev_flux): # found change point
 			fluxes.append(prev_flux)
 			count_at_fluxes.append(index-start_index)
@@ -38,7 +38,7 @@ def main(infile):
 		prev_flux = row[0]
 		index = index+1
 	# Add the last entry:
-	count_at_fluxes.append(len(idata[:,0])-start_index)
+	count_at_fluxes.append(len(data[:,0])-start_index)
 
 	print('Unique fluxes: {}'.format(unique_fluxes))
 	

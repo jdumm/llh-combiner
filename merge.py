@@ -14,10 +14,10 @@ def main(infile1, infile2, outfile, interpolate=False, diagnostic=False):
 	try:
 		f1 = open(infile1,'r')
 		h1 = f1.readline().split() # header
-
 	except IOError: 
 		print("Error: Input file {} missing.".format(infile1))
 		return 0
+
 	if(infile2 == 'dummy'): # If 2nd filename is 'dummy', just find the max of the first file.  For testing.
 		h2 = h1
 	else:
@@ -27,12 +27,12 @@ def main(infile1, infile2, outfile, interpolate=False, diagnostic=False):
 		except IOError: 
 			print("Error: Input file {} missing.".format(infile2))
 			return 0
+
 	try:
 		of = open(outfile,'w')
 	except IOError:
 		print("Error: Unable to open output file {}.".format(outfile))
 		return 0
-		
 
 	if ( h1 != h2 and interpolate==False ):
 		print('Error: Trying non-interpolation combination of files with different sampling definitions.  Set the --interp flag if desired.')
@@ -48,25 +48,28 @@ def main(infile1, infile2, outfile, interpolate=False, diagnostic=False):
 	#padding = (flux_max-flux_min)/float(10)
 	padding = 0
 	grid_upscale = 10
-	xs = np.linspace(flux_min-padding, flux_max+padding, grid_upscale*nsamples) # finer x sampling with slightly extended range for interpolation mode
+	xs = np.linspace(flux_min-padding, flux_max+padding, grid_upscale*nsamples) # finer x sampling with padded range for interpolation mode
 	#print('flux_min = {}, flux_max = {}, nsamples = {}'.format(flux_min, flux_max, nsamples))
 	#print(' with sampling points: {}'.format(x))
 
 	line_count = 0
 	overflow_count = 0
+	count_correct = 0
 	while True: # Loop over lines in the files
 		line1 = np.array(map(float,f1.readline().strip().split()))
 		if (infile2 == 'dummy'):
 			if len(line1)==0: break # end of file
 			line2 = np.zeros(len(line1)) # Set all results of dummy file to 0 - no impact on first analysis
-			line2[0] = line1[0] # matchin fluxes in dummy file
+			line2[0] = line1[0] # matching fluxes in dummy file
 		else:
 			line2 = np.array(map(float,f2.readline().strip().split()))
+
 		if len(line1)==0 or len(line2)==0: break # end of file
 		line_count += 1
 		if line1[0] != line2[0]:
 			print('Error: Fluxes not equal for this trial!') # Maybe need to set an equality tolerance here?
 			return 0
+
 		if (interpolate):
 			#print('Finding max by interpolating between grid points...')
 			# Not sure if we should aim to have this be an option or decide on one method for interpolation
@@ -81,24 +84,40 @@ def main(infile1, infile2, outfile, interpolate=False, diagnostic=False):
 				# Otherwise numerical noise near (0,0) dominates the measurement of the median of background-only trials!
 				#smoothing_factor = 0.15
 				smoothing = 1e-3 # Acts as a maximum chi2 for spline
-				order = 2 # degree of spline knob polynomial 
+				order = 2 # degree of spline knob polynomial.  2 or 3 are both suitable.
 				interp1 = UnivariateSpline(x, line1[1:], k=order, s=smoothing)
 				interp2 = UnivariateSpline(x, line2[1:], k=order, s=smoothing)
 				sum_array = interp1(xs)+interp2(xs)
 			else:
 				print('unrecongized interp_opt: {}'.format(interp_opt))
 				return 0
-			# The max is not found to floating pt precision, just on a much finer grid set by grid_upscale.
+
 			# Find max log-likelihood
+			# The max is not found to floating pt precision, just on a much finer grid set by grid_upscale.
 			maxllh = np.max(sum_array)
+
 			# Translate max array index into max flux:
 			maxflux = np.argmax(sum_array)*((flux_max+padding)-(flux_min-padding))/(grid_upscale*nsamples)
 			if (maxflux > 0.95*(flux_max - flux_min)):
 				overflow_count += 1
-				#print('Warning: Best-fit flux {} found to be with 5% of the top of the flux range {}'.format(maxflux,flux_max))
 				#diagnostic = True
-			# Implement check for maxflux being at edge of range?  Might need to implement padding in that case.
-			of.write("{:.2e} {:.2e} {:.2e}\n".format(line1[0],maxflux,maxllh)) # print out flux and the max TS
+			# Check if true flux is contained within 1.0 of the peak (corresponding to 0.5 in log-likelihood ratio).
+			for i in range(0,len(sum_array),1):
+				if (sum_array[i] > maxllh-1.0):
+					lowi = i
+					break
+			for i in range(len(sum_array)-1,0-1,-1):
+				if (sum_array[i] > maxllh-1.0):
+					highi = i
+					break
+			lowflux = lowi*((flux_max+padding)-(flux_min-padding))/(grid_upscale*nsamples)
+			highflux = highi*((flux_max+padding)-(flux_min-padding))/(grid_upscale*nsamples)
+			trueflux = line1[0]
+			#print('{:0.2e} {:0.2e} {:0.2e}'.format(lowflux, trueflux, highflux))
+			if (lowflux < trueflux and trueflux < highflux):
+				count_correct = count_correct + 1
+
+			of.write("{:.2e} {:.2e} {:.2e}\n".format(trueflux,maxflux,maxllh)) # write the flux and the max TS
 			if (diagnostic):
 				plt.figure()
 				plt.plot(x, line1[1:], 'ko', ms=3, alpha=0.5)
@@ -133,6 +152,8 @@ def main(infile1, infile2, outfile, interpolate=False, diagnostic=False):
 			of.write("{:.2e} {:.2e} {:.2e}\n".format(line1[0],maxflux,maxllh)) # print out flux and the max TS
 
 	print('Best-fit flux found to be with 5% of the top of the flux range {} a total of {} times out of {}'.format(flux_max,overflow_count,line_count))
+	if (interpolate):
+		print('True flux contained within 0.5 log-likelihood of the peak in {:0.1f} percent of the trials'.format(100.*count_correct/line_count))
 	f1.close()
 	if(infile2 != 'dummy'): f2.close()
 	of.close()
