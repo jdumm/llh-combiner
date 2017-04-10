@@ -1,49 +1,43 @@
-A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman&Cousins upper limits and sensitivities.  
+A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman&Cousins(TODO) upper limits and sensitivities.  
 
-An example workflow looks like this:
-1) Each individual analysis generates 
+So far, there is a 'merge.py' script for merging simulated log-likelihood curves from >=1 independent analyses as well as a simple Neyman sensitivity script, 'sensitivity.py'.
 
-So far, there is a script for merging simulated log-likelihood curves from independent analyses as well as a simple Neyman sensitivity script.
-TODO: Implement F&C limit calculation (possibly starting from a script by Martin) and some more data visualization features for the sensitivity calculation to verify the TS distributions.
-
-Note that if running with ipython, the args can properly be passed to a script like merge.py by using an extra "--" between args, e.g.:
-ipython merge.py -- test_data/results1.txt test_data/results2.txt --interp --diagnostic
+Note that if running with ipython, the args can properly be passed to a script like merge.py by using an extra "--" after the script name, e.g.:
+ipython merge.py -- results1.txt results2.txt test_data/merged_results.out --interp
 
 So an example usage might be:
 gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
 ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/MyFile.txt test_data/merged_7yrICmuons_KRAg5e7_MyFile.txt --interp
 ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_MyFile.txt 
 
-An example for running one set of analysis results through to get a sensitivity using a ‘dummy’ file name.  You could try this with existing data in the GitHub project just to see if everything works:
+The sensitivity for a single analysis can be obtained by only passing a single input file (no more 'dummy' file names). You could try this with existing data in the GitHub project just to see if everything works:
 gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
-ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt dummy test_data/merged_7yrICmuons_KRAg5e7_dummy.txt --interp
-ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_dummy.txt 
+ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7yrICmuons_KRAg5e7.txt --interp
+ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7.txt 
 
-To look at a plot of how the merging is working for each trial, use the --diagnostic option (you may have to force quit the process if you don't want to go through them all).
+To look at a plot of how the merging is working for each trial, use the --diagnostic option (you may have to force quit the process if you don't want to go through them all):
+ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7yrICmuons_KRAg5e7.txt --interp --diagnostic
 
-ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt dummy test_data/merged_7yrICmuons_KRAg5e7_dummy.txt --interp --diagnostic
+Many files can be merged simultaneously by adding them as positional arguments:
+ipython merge.py -- results1.txt results2.txt results3.txt test_data/3merged_results.out --interp
 
-If someone hands you a mysterious file, you can use the 'ntrials' utility script to determine the number of trials at each flux:
-ipython ntrials.py -- test_data/results_7yrICmuons_KRAg5e7_shuffled.txt 
+If someone hands you a mysterious file, you can use the 'ntrials.py' utility script to determine the number of trials at each flux:
+ipython ntrials.py -- test_data/results_7yrICmuons_KRAg5e7.txt 
 
 Example output:
 Unique fluxes: [ 0.    0.25  0.5   0.75  1.    1.25  1.5   1.75  2.  ]
 For flux = 0.00e+00, nTrials = 2000
 For flux = 2.50e-01, nTrials = 2000
-For flux = 5.00e-01, nTrials = 2000
-For flux = 7.50e-01, nTrials = 2000
-For flux = 1.00e+00, nTrials = 2000
-For flux = 1.25e+00, nTrials = 2000
-For flux = 1.50e+00, nTrials = 2000
+...
 For flux = 1.75e+00, nTrials = 2000
+For flux = 2.00e+00, nTrials = 2000
 
-
-The ordering of the trials prior to merging should not matter, provided that there are the right number of trials at the right fluxe values.  This principle can be verified by shuffling the files and re-running the sensitivity calculation:
+The randomized ordering of the trials prior to merging should not matter, provided that there are the right number of trials at the right flux values.  This principle can be verified by shuffling the files and re-running the sensitivity calculation:
 
 gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
 ipython shuffle.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/results_7yrICmuons_KRAg5e7_shuffled.txt
-ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7_shuffled.txt dummy test_data/merged_7yrICmuons_KRAg5e7_dummy_shuffled.txt --interp
-ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_dummy_shuffled.txt
+ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7_shuffled.txt test_data/merged_7yrICmuons_KRAg5e7_shuffled.txt --interp
+ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_shuffled.txt
 
 Note that shuffling any input file also groups all trials at the same flux level together in case they are disjoint.  This can be used to bring different files into a common format.
 
