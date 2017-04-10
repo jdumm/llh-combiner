@@ -38,6 +38,7 @@ def main(infile):
 		prev_flux = row[0]
 		index = index+1
 	# Add the last entry:
+	fluxes.append(row[0])
 	count_at_fluxes.append(len(data[:,0])-start_index)
 
 	print('Unique fluxes: {}'.format(unique_fluxes))
