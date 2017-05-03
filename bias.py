@@ -5,6 +5,8 @@ import math
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
 import numpy as np
+from scipy.optimize import curve_fit
+
 
 r"""A utility for examining any possible bias in the flux measurement.  Operates on 'merged' input files.
 """
@@ -22,19 +24,30 @@ def main(infile):
 	plt.figure()
 	plt.yscale('log')
 	plt.xlabel('Reco Flux - True Flux')
-	plt.ylabel('Rate/bin')
+	plt.ylabel('N Trials')
 	bins=np.arange(-2, 2, 0.25)
 	unique_fluxes = np.unique(data[:,0]) # sorted
+	#unique_fluxes = unique_fluxes[:9]
 
 	print('Sorted list of unique fluxes: {})'.format(unique_fluxes))
 	n = len(unique_fluxes)
+	ylows = np.zeros(n)
+	medsv = np.zeros(n)
+	yhighs= np.zeros(n)
 	meds = np.zeros(n)
 	means= np.zeros(n)
 	stds = np.zeros(n)
 	i = 0
+	rfluxes = []
+	stats = []
+	
 	for tflux in unique_fluxes: # Loop over True Fluxes available
-		rflux = data[data[:,0]==tflux][:,1] # Isolate the list of all Reco Flux values for this True Flux
-		dist = rflux - tflux
+		rfluxes.append(data[data[:,0]==tflux][:,1]) # Isolate the list of all Reco Flux values for this True Flux
+		dist = rfluxes[i] - tflux
+		stats = np.percentile(rfluxes[i],[16,50,84])
+		medsv[i] = stats[1]
+		ylows[i] = medsv[i] - stats[0]
+		yhighs[i] = stats[2] - medsv[i]
 		meds[i] = np.median(dist)
 		means[i]= np.mean(dist)
 		stds[i] = np.std(dist)
@@ -46,6 +59,37 @@ def main(infile):
 	plt.ylabel('Reco Flux - True Flux')
 	plt.errorbar(unique_fluxes, meds, xerr=0.0, yerr=0.0)
 	plt.errorbar(unique_fluxes, means, xerr=0.0, yerr=stds)
+
+	plt.figure()
+	#plt.xlim(-0.5,3.5)
+	#plt.ylim(-0.5,3.5)
+	plt.violinplot(rfluxes,unique_fluxes,widths=0.25,showmeans=True,showmedians=False,showextrema=False)
+	plt.errorbar(unique_fluxes, medsv, xerr=0.0, yerr=[ylows,yhighs], linestyle='',marker='o',color='k')
+	plt.xlabel('True Flux')
+	plt.ylabel('Reco Flux')
+	x = np.arange(-0.5,np.max(unique_fluxes)+0.5,0.1)
+	plt.plot(x,x,color='k',linestyle='--')
+	plt.axis('equal')
+
+	plt.figure()
+	bins=np.arange(0, 10, 0.5)
+	tses = []
+	meds_ts = []
+	for tflux in unique_fluxes: # Loop over True Fluxes available
+		ts = data[data[:,0]==tflux][:,2] # Isolate the list of all TS values for this True Flux
+		tses.append(ts)
+		plt.hist(ts,bins,histtype='step')
+		meds_ts.append(np.median(ts))
+	plt.yscale('log')
+	plt.xlabel('TS')
+
+
+	plt.figure()
+	plt.violinplot(tses,unique_fluxes,widths=0.25,showmeans=True,showmedians=False,showextrema=False)
+	plt.errorbar(unique_fluxes, meds_ts, xerr=0.0, yerr=0.0, linestyle='',marker='o',color='k')
+	plt.xlabel('True Flux')
+	plt.ylabel('TS')
+
 	plt.show()
 
 
