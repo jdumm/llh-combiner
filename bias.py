@@ -33,9 +33,9 @@ def main(infile):
 	n = len(unique_fluxes)
 	ylows = np.zeros(n)
 	medsv = np.zeros(n)
-	yhighs= np.zeros(n)
+	yhighs = np.zeros(n)
 	meds = np.zeros(n)
-	means= np.zeros(n)
+	means = np.zeros(n)
 	stds = np.zeros(n)
 	i = 0
 	rfluxes = []
@@ -49,10 +49,13 @@ def main(infile):
 		ylows[i] = medsv[i] - stats[0]
 		yhighs[i] = stats[2] - medsv[i]
 		meds[i] = np.median(dist)
-		means[i]= np.mean(dist)
+		means[i] = np.mean(dist)
 		stds[i] = np.std(dist)
 		plt.hist(dist,bins=bins,histtype='step')
 		i=i+1
+
+	fit_a, fit_b = np.polyfit(unique_fluxes, medsv, 1)
+	print 'Bias fitted by:', fit_a, '* x +', fit_b
 
 	plt.figure()
 	plt.xlabel('True Flux')
@@ -69,6 +72,8 @@ def main(infile):
 	plt.ylabel('Reco Flux')
 	x = np.arange(-0.5,np.max(unique_fluxes)+0.5,0.1)
 	plt.plot(x,x,color='k',linestyle='--')
+	fit_y = [fit_a * x_ + fit_b for x_ in x]
+	plt.plot(x, fit_y, color='k',linestyle='-')
 	plt.axis('equal')
 
 	plt.figure()
@@ -90,8 +95,8 @@ def main(infile):
 	plt.xlabel('True Flux')
 	plt.ylabel('TS')
 
-	plt.show(block=False) #This permits to close all windows...
-	raw_input()			  #...by pressing any key in the terminal.
+
+	plt.show(block=False)
 
 if __name__ == "__main__":
 	import argparse
@@ -110,3 +115,5 @@ if __name__ == "__main__":
 		main(args.inputfile)
 	else:
 		parser.print_help()
+
+	raw_input('Press any key...')
