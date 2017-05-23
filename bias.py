@@ -17,7 +17,7 @@ r"""A utility for examining any possible bias in the flux measurement.  Operates
 def main(infile):
 	try:
 		data = np.loadtxt(infile)
-	except IOError: 
+	except IOError:
 		print "Error: Input file {} missing.".format(infile)
 		return 0
 
@@ -40,7 +40,7 @@ def main(infile):
 	i = 0
 	rfluxes = []
 	stats = []
-	
+
 	for tflux in unique_fluxes: # Loop over True Fluxes available
 		rfluxes.append(data[data[:,0]==tflux][:,1]) # Isolate the list of all Reco Flux values for this True Flux
 		dist = rfluxes[i] - tflux
@@ -90,8 +90,8 @@ def main(infile):
 	plt.xlabel('True Flux')
 	plt.ylabel('TS')
 
-	plt.show()
-
+	plt.show(block=False) #This permits to close all windows...
+	raw_input()			  #...by pressing any key in the terminal.
 
 if __name__ == "__main__":
 	import argparse
@@ -110,4 +110,3 @@ if __name__ == "__main__":
 		main(args.inputfile)
 	else:
 		parser.print_help()
-
