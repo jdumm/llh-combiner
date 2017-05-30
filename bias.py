@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
 import numpy as np
 from scipy.optimize import curve_fit
-
+from os import remove
+from shutil import move
 
 r"""A utility for examining any possible bias in the flux measurement.  Operates on 'merged' input files.
 """
@@ -14,7 +15,7 @@ r"""A utility for examining any possible bias in the flux measurement.  Operates
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
 # And TS should be -2*log( likelihood ) [unitless]
 
-def main(infile):
+def main(infile, datafile):
 	try:
 		data = np.loadtxt(infile)
 	except IOError:
@@ -55,7 +56,20 @@ def main(infile):
 		i=i+1
 
 	fit_a, fit_b = np.polyfit(unique_fluxes, medsv, 1)
-	print 'Bias fitted by:', fit_a, '* x +', fit_b
+	print 'Bias fitted by: '+'{0:.3f}'.format(fit_a)+' * x + '+'{0:.3f}'.format(fit_b)
+
+	# Write the bias in the file if datafile is given
+	if datafile:
+		temp_file = 'temporary_file.txt'
+		with open(temp_file, 'w') as tempfile:
+			tempfile.write('Bias fitted by: '+'{0:.3f}'.format(fit_a)+' * x + '+'{0:.3f}'.format(fit_b)+'\n')
+			print 'Writing in', datafile[0]
+			with open(datafile[0]) as oldfile:
+				for line in oldfile:
+					if line.find('Bias') == -1:
+						tempfile.write(line)
+		remove(datafile[0])
+		move(temp_file, datafile[0])
 
 	plt.figure()
 	plt.xlabel('True Flux')
@@ -110,10 +124,18 @@ if __name__ == "__main__":
 	  help="Path to input file containing results of (pre-merged) scrambled trials.",
 	  metavar="FILE")
 
+	# Initial data file where we will write the bias to correct it with merge.py.
+	parser.add_argument(
+	  "datafile",
+	  nargs="*",
+	  default='',
+	  type=str,
+	  help="Path to file to be merged.",
+	  metavar="FILE")
+
 	args = parser.parse_args()
-	if (len(sys.argv) == 2):
-		main(args.inputfile)
+	if (len(sys.argv) == 2 or len(sys.argv) == 3):
+		main(args.inputfile, args.datafile)
+		raw_input('Press any key...')
 	else:
 		parser.print_help()
-
-	raw_input('Press any key...')

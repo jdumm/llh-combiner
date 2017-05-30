@@ -2,6 +2,7 @@
 
 import sys
 import math
+from re import match
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 
@@ -10,17 +11,23 @@ r"""Merge two sets of files representing log-likelihood vs flux. Each trial's or
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
 # And the joint TS should be -2*log( likelihood ) [unitless]
 
-def main(files, interpolate=False, diagnostic=False):
+def main(files, interpolate=False, diagnostic=False, bias=False):
 	infiles = files[:-1] # All but the last argument are input files
 	outfile = files[-1]  # Last argument is the output file
 	n_in = len(infiles)
 	fs = [] # input file handles
 	hs = [] # headers
+	bs = [] # bias
 	for infile in infiles:
 		try:
 			fs.append( open(infile,'r') ) # keep a list of the open files
-			hs.append(fs[-1].readline().split()) # append header of the last file opened
-		except IOError: 
+			hs.append(fs[-1].readline().split()) # append header of the last file opened...
+			if 'Bias' in hs[-1]:				 # ... if the first line is the bias, get the header from the second line.
+				bs.append(hs.pop()) # append bias of the last file opened
+				hs.append(fs[-1].readline().split())
+			else:
+				bs.append(['Bias', 'fitted', 'by:', '1', '*', 'x', '+', '0']) # If no bias in the file, put no bias
+		except IOError:
 			print("Error: Input file {} cannot be opened.".format(infile))
 			return 0
 	try:
@@ -68,25 +75,36 @@ def main(files, interpolate=False, diagnostic=False):
 			break # Break out of outer loop over lines in file
 
 		if (interpolate):
+			a_ = []
+			b_ = []
+			for index in range(len(bs)):
+				a_.append(float(bs[index][3]))
+				b_.append(float(bs[index][7]))
 			#print('Finding max by interpolating between grid points...')
 			# Not sure if we should aim to have this be an option or decide on one method for interpolation
 			interp_opt = 'linear'
-			#interp_opt = 'spline' 
+			#interp_opt = 'spline'
 			sum_array = np.zeros(len(xs))
 			interps = []
 			if (interp_opt == 'linear'):
-				for line in lines:
-					interp = np.interp(xs, x, line[1:])
+				for index, line in enumerate(lines):
+					if bias:
+						interp = np.interp(xs, (x - b_[index]) / a_[index], line[1:])
+					else:
+						interp = np.interp(xs, x, line[1:])
 					interps.append(interp)
 					sum_array += interp
 			elif (interp_opt == 'spline'):
-				# NB: This smoothing factor must be kept very small so that the spline interpolation does not 'miss' the point (0,0).  
+				# NB: This smoothing factor must be kept very small so that the spline interpolation does not 'miss' the point (0,0).
 				# Otherwise numerical noise near (0,0) dominates the measurement of the median of background-only trials!
 				#smoothing_factor = 0.15
 				smoothing = 1e-3 # Acts as a maximum chi2 for spline
 				order = 2 # degree of spline knob polynomial.  2 or 3 are both suitable.
 				for line in lines:
-					spline = UnivariateSpline(x, line[1:], k=order, s=smoothing)
+					if bias:
+						spline = UnivariateSpline((x - b_[index]) / a_[index], line[1:], k=order, s=smoothing)
+					else:
+						spline = UnivariateSpline(x, line[1:], k=order, s=smoothing)
 					interps.append(spline)
 					sum_array += spline(xs)
 			else:
@@ -183,8 +201,15 @@ if __name__ == "__main__":
       action="store_true",
       help='Set to run special diagnostics to visualize results.  Leave unset for usual usage.')
 
+	# Bias correction flag
+	parser.add_argument(
+      '--bias',
+      default=False,
+      action="store_true",
+      help='Set to correct bias from a datafile output of bias.py. Leave unset for usual usage.')
+
 	args = parser.parse_args()
 	if (len(sys.argv) >= 2 and len(args.files) >= 2):
-		main(args.files, args.interp, args.diagnostic)
+		main(args.files, args.interp, args.diagnostic, args.bias)
 	else:
 		parser.print_help()
