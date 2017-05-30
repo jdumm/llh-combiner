@@ -15,7 +15,15 @@ r"""A utility for examining any possible bias in the flux measurement.  Operates
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
 # And TS should be -2*log( likelihood ) [unitless]
 
-def main(infile, datafile):
+def funca(x, a_):
+	"""Function used to fit the scale factor with a null offset"""
+	return a_ * x
+
+def funcb(x, b_):
+	"""Function used to fit only the offset"""
+	return x + b_
+
+def main(infile, datafile, offset=False, scale=False):
 	try:
 		data = np.loadtxt(infile)
 	except IOError:
@@ -56,6 +64,14 @@ def main(infile, datafile):
 		i=i+1
 
 	fit_a, fit_b = np.polyfit(unique_fluxes, medsv, 1)
+	if offset:
+		param, _ = curve_fit(funcb, unique_fluxes, medsv)
+		fit_a = 1.
+		fit_b = param[0]
+	elif scale:
+		param, _ = curve_fit(funca, unique_fluxes, medsv)
+		fit_a = param[0]
+		fit_b = 0.
 	print 'Bias fitted by: '+'{0:.3f}'.format(fit_a)+' * x + '+'{0:.3f}'.format(fit_b)
 
 	# Write the bias in the file if datafile is given
@@ -133,9 +149,27 @@ if __name__ == "__main__":
 	  help="Path to file to be merged.",
 	  metavar="FILE")
 
+	# Offset flag
+	parser.add_argument(
+      '--offset',
+      default=False,
+      action="store_true",
+      help='Set to fit only the offset of the bias, b in: y = x + b. Leave unset to fit y = a * x + b.')
+
+	# Scale flag
+	parser.add_argument(
+      '--scale',
+      default=False,
+      action="store_true",
+      help='Set to fit only the scale factor of the bias, a in: y = a * x. Leave unset to fit y = a * x + b.')
+
 	args = parser.parse_args()
-	if (len(sys.argv) == 2 or len(sys.argv) == 3):
-		main(args.inputfile, args.datafile)
+	if args.offset and args.scale:
+		parser.print_help()
+		raise ValueError('"offset" and "scale" arguments should not be set true in the same time. If you want to fit y = a * x + b put none of these two arguments.')
+
+	if (len(sys.argv) >= 2 or len(sys.argv) <= 4):
+		main(args.inputfile, args.datafile, args.offset, args.scale)
 		raw_input('Press any key...')
 	else:
 		parser.print_help()
