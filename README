@@ -1,4 +1,4 @@
-A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman&Cousins(TODO) upper limits and sensitivities.  
+A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman&Cousins(TODO) upper limits and sensitivities.
 
 So far, there is a 'merge.py' script for merging simulated log-likelihood curves from >=1 independent analyses as well as a simple Neyman sensitivity script, 'sensitivity.py'.
 
@@ -8,12 +8,12 @@ ipython merge.py -- results1.txt results2.txt test_data/merged_results.out --int
 So an example usage might be:
 gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
 ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/MyFile.txt test_data/merged_7yrICmuons_KRAg5e7_MyFile.txt --interp
-ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_MyFile.txt 
+ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_MyFile.txt
 
 The sensitivity for a single analysis can be obtained by only passing a single input file (no more 'dummy' file names). You could try this with existing data in the GitHub project just to see if everything works:
 gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
 ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7yrICmuons_KRAg5e7.txt --interp
-ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7.txt 
+ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7.txt
 
 To look at a plot of how the merging is working for each trial, use the --diagnostic option (you may have to force quit the process if you don't want to go through them all):
 ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7yrICmuons_KRAg5e7.txt --interp --diagnostic
@@ -21,8 +21,9 @@ ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7y
 Many files can be merged simultaneously by adding them as positional arguments:
 ipython merge.py -- results1.txt results2.txt results3.txt test_data/3merged_results.out --interp
 
+----ntrials.py----
 If someone hands you a mysterious file, you can use the 'ntrials.py' utility script to determine the number of trials at each flux:
-ipython ntrials.py -- test_data/results_7yrICmuons_KRAg5e7.txt 
+ipython ntrials.py -- test_data/results_7yrICmuons_KRAg5e7.txt
 
 Example output:
 Unique fluxes: [ 0.    0.25  0.5   0.75  1.    1.25  1.5   1.75  2.  ]
@@ -32,6 +33,7 @@ For flux = 2.50e-01, nTrials = 2000
 For flux = 1.75e+00, nTrials = 2000
 For flux = 2.00e+00, nTrials = 2000
 
+----shuffle.py----
 The randomized ordering of the trials prior to merging should not matter, provided that there are the right number of trials at the right flux values.  This principle can be verified by shuffling the files and re-running the sensitivity calculation:
 
 gunzip test_data/results_7yrICmuons_KRAg5e7.txt.gz
@@ -41,3 +43,22 @@ ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_shuffled.txt
 
 Note that shuffling any input file also groups all trials at the same flux level together in case they are disjoint.  This can be used to bring different files into a common format.
 
+----bias.py----
+A fit of the median fitted flux versus injected flux of the pseudo-experiments permits to detect bias.
+
+To fit the bias (as f(x) = a * x + b), do:
+ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7yrICmuons_KRAg5e7.txt --interp
+ipython bias.py -- test_data/merged_7yrICmuons_KRAg5e7.txt
+
+The --offset option can be added, this will fit the bias as an offset: f(x) = x + b
+Or the --scale option to fit a bias as a scaling factor: f(x) = a * x
+
+The bias can be corrected by giving the initial datafile to bias.py and the --bias option to merge.py. This will write the bias in the first line of the datafile (or rewrite it if already there) and merge.py will correct it for the merging.
+For example, to correct a bias fitted as an offset in results_file1.txt, as a scale factor in results_file2.txt and no bias in results_file3.txt, do:
+ipython merge.py -- test_data/results_file1.txt test_data/merged_file1.txt --interp
+ipython bias.py -- test_data/merged_file1.txt test_data/results_file1.txt --offset
+ipython merge.py -- test_data/results_file2.txt test_data/merged_file2.txt --interp
+ipython bias.py -- test_data/merged_file2.txt test_data/results_file2.txt --scale
+ipython merge.py -- test_data/results_file1.txt test_data/results_file2.txt test_data/results_file3.txt test_data/merged_files.txt --interp --bias
+
+The --bias option will correct all the files with the bias written in the first line, remove this line to not correct a particular file.
