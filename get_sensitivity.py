@@ -1,0 +1,120 @@
+#!/usr/bin/env python
+
+"""Run automatically the scripts to get the sensitivity with or without correction of the biases
+ instead of running yourself each script."""
+
+import sys
+import argparse
+from os import system, remove
+from shutil import move
+
+def main(files, bias_files, options):
+    """Get the sensitivity corresponding to the given arguments."""
+    if bias_files:
+        print '\nFitting of biases to correct'
+        for bias_file in bias_files:
+            if 'results' in bias_file:
+                merged_file = bias_file.replace('results_', 'merged_')
+            else:
+                merged_file = '/merged_'.join(bias_file.rsplit('/', 1))
+            error = system('ipython merge.py -- ' + bias_file + ' ' + merged_file + options['interp'])
+            if error:
+                exit(0)
+            error = system('ipython bias.py -- ' + merged_file + ' ' + bias_file + options['fit'] + options['hide'])
+            if error:
+                exit(0)
+            system('rm ' + merged_file)
+
+    # Removing bias line from files we do not correct
+    if files:
+        for file_ in files:
+            temp_file = 'temporary_file.txt'
+            with open(temp_file, 'w') as tempfile:
+                print 'Removing bias from', file_
+                with open(file_) as oldfile:
+                    for line in oldfile:
+                        if line.find('Bias') == -1:
+                            tempfile.write(line)
+            remove(file_)
+            move(temp_file, file_)
+
+    print '\nMerging and sensitivity'
+    error = system('ipython merge.py -- ' + ' '.join(files) + ' ' + ' '.join(bias_files)
+           + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['diagnostic'])
+    if error:
+        exit(0)
+    error = system('ipython sensitivity.py -- test_data/merged_all.txt' + options['hide'])
+    system('rm test_data/merged_all.txt')
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__,)
+
+    parser.add_argument(
+        "files",
+        nargs="*",
+        default='',
+        type=str,
+        help="List of one or more input files to be merged.")
+
+    # Interpolation flag
+    parser.add_argument(
+        '--interp',
+        default=False,
+        action="store_true",
+        help='Set to interpolate between sample points using splines.'
+        ' Leave unset for naive summing at grid points.')
+
+    # Diagnostic flag
+    parser.add_argument(
+        '--diagnostic',
+        default=False,
+        action="store_true",
+        help='Set to run special diagnostics to visualize results.  Leave unset for usual usage.')
+
+    # Bias correction flag
+    parser.add_argument(
+        '--bias',
+        nargs="*",
+        default='',
+        type=str,
+        help='Set to correct bias of the following files. Leave unset for usual usage.')
+
+    # Offset flag
+    parser.add_argument(
+        '--offset',
+        default=False,
+        action="store_true",
+        help='Set to fit only the offset of the bias, b in: y = x + b.'
+        ' Leave unset to fit y = a * x + b.')
+
+    # Scale flag
+    parser.add_argument(
+        '--scale',
+        default=False,
+        action="store_true",
+        help='Set to fit only the scale factor of the bias, a in: y = a * x.'
+        ' Leave unset to fit y = a * x + b.')
+
+    # Hide flag
+    parser.add_argument(
+        '--hide',
+        default=False,
+        action="store_true",
+        help='Set to not show the plots.')
+
+    args = parser.parse_args()
+    options = {'interp': ' --interp' * args.interp,
+               'diagnostic': ' --diagnostic' * args.diagnostic,
+               'hide': ' --hide' * args.hide}
+
+    if args.offset and args.scale:
+        parser.print_help()
+        raise ValueError('"offset" and "scale" arguments should not be set true at the same time.'
+                         ' If you want to fit y = a * x + b put none of these two arguments.')
+    else:
+        options['fit'] = ' --offset' * args.offset + ' --scale' * args.scale
+
+    if len(sys.argv) >= 2:
+        main(args.files, args.bias, options)
+    else:
+        parser.print_help()

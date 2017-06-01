@@ -25,6 +25,8 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 			if 'Bias' in hs[-1]:				 # ... if the first line is the bias, get the header from the second line.
 				bs.append(hs.pop()) # append bias of the last file opened
 				hs.append(fs[-1].readline().split())
+				if bias:
+					print 'Correction of bias for', infile
 			else:
 				bs.append(['Bias', 'fitted', 'by:', '1', '*', 'x', '+', '0']) # If no bias in the file, put no bias
 		except IOError:
@@ -82,11 +84,22 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 				b_.append(float(bs[index][7]))
 			#print('Finding max by interpolating between grid points...')
 			# Not sure if we should aim to have this be an option or decide on one method for interpolation
-			interp_opt = 'linear'
-			#interp_opt = 'spline'
+			# interp_opt = 'linear'
+			interp_opt = 'fit_poly'
+			# interp_opt = 'spline'
 			sum_array = np.zeros(len(xs))
 			interps = []
-			if (interp_opt == 'linear'):
+			if interp_opt == 'fit_poly':
+				for index, line in enumerate(lines):
+					if bias:
+						fit = np.polyfit((x - b_[index]) / a_[index], line[1:], deg=4)
+					else:
+						fit = np.polyfit(x, line[1:], deg=4)
+					y_offset = np.polyval(fit, [0])
+					interp = np.polyval(fit, xs) - y_offset
+					interps.append(interp)
+					sum_array += interp
+			elif (interp_opt == 'linear'):
 				for index, line in enumerate(lines):
 					if bias:
 						interp = np.interp(xs, (x - b_[index]) / a_[index], line[1:])
@@ -100,7 +113,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 				#smoothing_factor = 0.15
 				smoothing = 1e-3 # Acts as a maximum chi2 for spline
 				order = 2 # degree of spline knob polynomial.  2 or 3 are both suitable.
-				for line in lines:
+				for index, line in enumerate(lines):
 					if bias:
 						spline = UnivariateSpline((x - b_[index]) / a_[index], line[1:], k=order, s=smoothing)
 					else:
@@ -137,7 +150,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 				count_correct = count_correct + 1
 
 			of.write("{:.2e} {:.2e} {:.2e}\n".format(trueflux,maxflux,maxllh)) # write the flux and the max TS
-			if (diagnostic):
+			if diagnostic:# and maxflux != 0:
 				plt.figure()
 				for interp in interps:
 					plt.plot(xs, interp, 'r', lw=1.2, alpha=0.7)

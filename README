@@ -21,6 +21,20 @@ ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7y
 Many files can be merged simultaneously by adding them as positional arguments:
 ipython merge.py -- results1.txt results2.txt results3.txt test_data/3merged_results.out --interp
 
+----get_sensitivity.py----
+This script has been made to correct biases (or not) and get the sensitivity in one command line.
+
+An example of usage might be:
+ipython get_sensitivity.py -- test_data/results_7yrICmuons_KRAg5e7.txt --bias test_data/results_9yrANTshowers_KRAg5e7_23may.txt test_data/results_9yrANTmuons_KRAg5e7_23may.txt --interp --offset --hide
+
+This will correct the offset bias of both ANT files but not IC one. It is possible to correct all the files or none of them.
+--hide option permits to not show the plots.
+--diagnostic option is also available.
+The --offset option fit the bias as an offset: f(x) = x + b
+    the --scale option fit the bias as a scaling factor: f(x) = a * x
+    and none of these two options fit the bias as f(x) = a * x + b
+
+
 ----ntrials.py----
 If someone hands you a mysterious file, you can use the 'ntrials.py' utility script to determine the number of trials at each flux:
 ipython ntrials.py -- test_data/results_7yrICmuons_KRAg5e7.txt
