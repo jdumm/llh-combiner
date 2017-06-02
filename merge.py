@@ -84,17 +84,17 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 				b_.append(float(bs[index][7]))
 			#print('Finding max by interpolating between grid points...')
 			# Not sure if we should aim to have this be an option or decide on one method for interpolation
-			# interp_opt = 'linear'
-			interp_opt = 'fit_poly'
+			interp_opt = 'linear'
+			# interp_opt = 'fit_poly'
 			# interp_opt = 'spline'
 			sum_array = np.zeros(len(xs))
 			interps = []
 			if interp_opt == 'fit_poly':
 				for index, line in enumerate(lines):
 					if bias:
-						fit = np.polyfit((x - b_[index]) / a_[index], line[1:], deg=4)
+						fit = np.polyfit((x - b_[index]) / a_[index], line[1:], deg=5)
 					else:
-						fit = np.polyfit(x, line[1:], deg=4)
+						fit = np.polyfit(x, line[1:], deg=5)
 					y_offset = np.polyval(fit, [0])
 					interp = np.polyval(fit, xs) - y_offset
 					interps.append(interp)

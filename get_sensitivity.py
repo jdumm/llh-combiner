@@ -17,10 +17,14 @@ def main(files, bias_files, options):
                 merged_file = bias_file.replace('results_', 'merged_')
             else:
                 merged_file = '/merged_'.join(bias_file.rsplit('/', 1))
-            error = system('ipython merge.py -- ' + bias_file + ' ' + merged_file + options['interp'])
+            command = 'ipython merge.py -- ' + bias_file + ' ' + merged_file + options['interp']
+            print command
+            error = system(command)
             if error:
                 exit(0)
-            error = system('ipython bias.py -- ' + merged_file + ' ' + bias_file + options['fit'] + options['hide'])
+            command = 'ipython bias.py -- ' + merged_file + ' ' + bias_file + options['fit'] + options['hide']
+            print command
+            error = system(command)
             if error:
                 exit(0)
             system('rm ' + merged_file)

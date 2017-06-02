@@ -58,7 +58,7 @@ ipython sensitivity.py -- test_data/merged_7yrICmuons_KRAg5e7_shuffled.txt
 Note that shuffling any input file also groups all trials at the same flux level together in case they are disjoint.  This can be used to bring different files into a common format.
 
 ----bias.py----
-A fit of the median fitted flux versus injected flux of the pseudo-experiments permits to detect bias.
+A fit of the median fitted flux versus injected flux of the pseudo-experiments permits to measure bias.
 
 To fit the bias (as f(x) = a * x + b), do:
 ipython merge.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/merged_7yrICmuons_KRAg5e7.txt --interp
@@ -68,11 +68,13 @@ The --offset option can be added, this will fit the bias as an offset: f(x) = x 
 Or the --scale option to fit a bias as a scaling factor: f(x) = a * x
 
 The bias can be corrected by giving the initial datafile to bias.py and the --bias option to merge.py. This will write the bias in the first line of the datafile (or rewrite it if already there) and merge.py will correct it for the merging.
-For example, to correct a bias fitted as an offset in results_file1.txt, as a scale factor in results_file2.txt and no bias in results_file3.txt, do:
+For example, to correct a bias fitted as an offset in results_file1.txt, as a scale factor in results_file2.txt and no bias in results_file3.txt and get the sensitivity do:
 ipython merge.py -- test_data/results_file1.txt test_data/merged_file1.txt --interp
 ipython bias.py -- test_data/merged_file1.txt test_data/results_file1.txt --offset
 ipython merge.py -- test_data/results_file2.txt test_data/merged_file2.txt --interp
 ipython bias.py -- test_data/merged_file2.txt test_data/results_file2.txt --scale
 ipython merge.py -- test_data/results_file1.txt test_data/results_file2.txt test_data/results_file3.txt test_data/merged_files.txt --interp --bias
 
-The --bias option will correct all the files with the bias written in the first line, remove this line to not correct a particular file.
+The --bias option will correct all the files having the bias written in the first line, remove this line to not correct a particular file.
+
+Or all of this can be done in one command line using the get_sensitivity.py script !
