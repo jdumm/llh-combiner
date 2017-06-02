@@ -18,12 +18,12 @@ def main(files, bias_files, options):
             else:
                 merged_file = '/merged_'.join(bias_file.rsplit('/', 1))
             command = 'ipython merge.py -- ' + bias_file + ' ' + merged_file + options['interp']
-            print command
+            # print command
             error = system(command)
             if error:
                 exit(0)
             command = 'ipython bias.py -- ' + merged_file + ' ' + bias_file + options['fit'] + options['hide']
-            print command
+            # print command
             error = system(command)
             if error:
                 exit(0)
