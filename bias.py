@@ -13,7 +13,7 @@ r"""A utility for examining any possible bias in the flux measurement.  Operates
 """
 
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
-# And TS should be -2*log( likelihood ) [unitless]
+# And TS should be log( likelihood ) [unitless]
 
 
 def funca(x, a_):

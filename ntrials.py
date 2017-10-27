@@ -7,7 +7,7 @@ import numpy as np
 r"""Just open a file and report how many trials take place at each flux value.  Print the results.
 """
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
-# And TS should be -2*log( likelihood ) [unitless]
+# And TS should be log( likelihood ) [unitless]
 
 # Returns a list of tuples indicating a range over which the flux is constant
 def main(infile):

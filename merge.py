@@ -9,7 +9,7 @@ from scipy.interpolate import UnivariateSpline
 r"""Merge two sets of files representing log-likelihood vs flux. Each trial's original flux, joint best-fit flux, and max TS are written to std output with line break.  Assumes input files will have a header of 3 numbers: minimum flux, maximum flux, number of sample points.  The following lines are assumed to start with the flux and then nsamples of the log-likelihood function.  Option to interpolate between sampling points or use straight sum at sampling points, in which case the flux range and number of sample must match.
 """
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
-# And the joint TS should be -2*log( likelihood ) [unitless]
+# And the joint TS should be log( likelihood ) [unitless]
 
 def main(files, interpolate=False, diagnostic=False, bias=False):
 	infiles = files[:-1] # All but the last argument are input files

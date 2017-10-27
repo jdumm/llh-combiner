@@ -9,7 +9,7 @@ import numpy as np
 r"""Read and display test statistics in sensitivity calculation. Assumes input file has 3 columns: True Flux, Best-fit Flux, and (joint) TS.
 """
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
-# And TS should be -2*log( likelihood ) [unitless]
+# And TS should be log( likelihood ) [unitless]
 
 
 def main(infile, hide):

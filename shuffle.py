@@ -9,7 +9,7 @@ import copy
 r"""Shuffle a scrambled-trial results file to simpy re-order for later merging.  It serves as a crosscheck that the order of the trials does not matter.  Since a file is expected to have multiple trials at many flux values, the flux change indices are found.  Shuffling only occurs inside of these ranges.  Shuffle.py sorts the entries before shuffling to account for disjoint trials where trials from some flux values are scattered throughout the file.
 """
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
-# And TS should be -2*log( likelihood ) [unitless]
+# And TS should be log( likelihood ) [unitless]
 
 # Returns a list of tuples indicating a range over which the flux is constant
 def find_change_indices(data):
