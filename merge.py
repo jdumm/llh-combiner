@@ -28,7 +28,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 				if bias:
 					print 'Correction of bias for', infile
 			else:
-				bs.append(['Bias', 'fitted', 'by:', '1', '*', 'x', '+', '0']) # If no bias in the file, put no bias
+				bs.append(['Bias', 'fitted', 'by:', '1', '*', 'x']) # If no bias in the file, put no bias
 		except IOError:
 			print("Error: Input file {} cannot be opened.".format(infile))
 			return 0
@@ -78,10 +78,8 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 
 		if (interpolate):
 			a_ = []
-			b_ = []
 			for index in range(len(bs)):
 				a_.append(float(bs[index][3]))
-				b_.append(float(bs[index][7]))
 			#print('Finding max by interpolating between grid points...')
 			# Not sure if we should aim to have this be an option or decide on one method for interpolation
 			interp_opt = 'linear'
@@ -92,7 +90,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 			if interp_opt == 'fit_poly':
 				for index, line in enumerate(lines):
 					if bias:
-						fit = np.polyfit((x - b_[index]) / a_[index], line[1:], deg=5)
+						fit = np.polyfit((x) / a_[index], line[1:], deg=5)
 					else:
 						fit = np.polyfit(x, line[1:], deg=5)
 					y_offset = np.polyval(fit, [0])
@@ -102,7 +100,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 			elif (interp_opt == 'linear'):
 				for index, line in enumerate(lines):
 					if bias:
-						interp = np.interp(xs, (x - b_[index]) / a_[index], line[1:])
+						interp = np.interp(xs, (x) / a_[index], line[1:])
 					else:
 						interp = np.interp(xs, x, line[1:])
 					interps.append(interp)
@@ -115,7 +113,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 				order = 2 # degree of spline knob polynomial.  2 or 3 are both suitable.
 				for index, line in enumerate(lines):
 					if bias:
-						spline = UnivariateSpline((x - b_[index]) / a_[index], line[1:], k=order, s=smoothing)
+						spline = UnivariateSpline((x) / a_[index], line[1:], k=order, s=smoothing)
 					else:
 						spline = UnivariateSpline(x, line[1:], k=order, s=smoothing)
 					interps.append(spline)

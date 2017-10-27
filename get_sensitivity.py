@@ -22,7 +22,7 @@ def main(files, bias_files, options):
             error = system(command)
             if error:
                 exit(0)
-            command = 'ipython bias.py -- ' + merged_file + ' ' + bias_file + options['fit'] + options['hide']
+            command = 'ipython bias.py -- ' + merged_file + ' ' + bias_file + options['hide']
             # print command
             error = system(command)
             if error:
@@ -83,22 +83,6 @@ if __name__ == "__main__":
         type=str,
         help='Set to correct bias of the following files. Leave unset for usual usage.')
 
-    # Offset flag
-    parser.add_argument(
-        '--offset',
-        default=False,
-        action="store_true",
-        help='Set to fit only the offset of the bias, b in: y = x + b.'
-        ' Leave unset to fit y = a * x + b.')
-
-    # Scale flag
-    parser.add_argument(
-        '--scale',
-        default=False,
-        action="store_true",
-        help='Set to fit only the scale factor of the bias, a in: y = a * x.'
-        ' Leave unset to fit y = a * x + b.')
-
     # Hide flag
     parser.add_argument(
         '--hide',
@@ -110,13 +94,6 @@ if __name__ == "__main__":
     options = {'interp': ' --interp' * args.interp,
                'diagnostic': ' --diagnostic' * args.diagnostic,
                'hide': ' --hide' * args.hide}
-
-    if args.offset and args.scale:
-        parser.print_help()
-        raise ValueError('"offset" and "scale" arguments should not be set true at the same time.'
-                         ' If you want to fit y = a * x + b put none of these two arguments.')
-    else:
-        options['fit'] = ' --offset' * args.offset + ' --scale' * args.scale
 
     if len(sys.argv) >= 2:
         main(args.files, args.bias, options)
