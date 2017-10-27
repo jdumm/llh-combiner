@@ -106,7 +106,7 @@ def main(infile, datafile, offset=False, scale=False, hide=False):
     x = np.arange(-0.5, np.max(unique_fluxes) + 0.5, 0.1)
     plt.plot(x, x, color='k', linestyle='--')
     fit_y = [fit_a * x_ + fit_b for x_ in x]
-    # plt.plot(x, fit_y, color='k', linestyle='-')
+    plt.plot(x, fit_y, color='k', linestyle='-')
     plt.axis('equal')
 
     plt.figure()

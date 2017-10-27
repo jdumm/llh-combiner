@@ -71,7 +71,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 				end_of_file=True # end of at least one file (trailing lines in other files ignored)
 				break
 			if line[0] != lines[0][0]: # Check that all fluxes for this trial are equal to the first file
-				print('Error: Fluxes not equal for this trial!') # Maybe need to set an equality tolerance here?
+				print('Error: Fluxes not equal for this trial! Do you use files with the same number of trials ?') # Maybe need to set an equality tolerance here?
 				return 0
 		if end_of_file == True:
 			break # Break out of outer loop over lines in file
