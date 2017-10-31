@@ -14,8 +14,12 @@ def main(infile):
 	try:
 		f = open(infile,'r')
 		h = f.readline().split() # header
+		skip_bias = 0
+		if h[0] == 'Bias':
+			skip_bias = 1
+			h = f.readline().split() # header
 		f.close()
-		data = np.loadtxt(infile,skiprows=1)
+		data = np.loadtxt(infile,skiprows=1+skip_bias)
 		order = data[:,0].argsort() # get index based on first column
 		data = data[order] # now ordered by flux
 
