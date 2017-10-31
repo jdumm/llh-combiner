@@ -24,6 +24,7 @@ import argparse
 from os import system, remove
 from shutil import move
 
+
 def main(files, bias_files, options):
     """Get the sensitivity corresponding to the given arguments."""
     if bias_files:
@@ -60,7 +61,7 @@ def main(files, bias_files, options):
 
     print '\nMerging and sensitivity'
     error = system('ipython merge.py -- ' + ' '.join(files) + ' ' + ' '.join(bias_files)
-           + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['diagnostic'])
+                   + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['diagnostic'])
     if error:
         exit(0)
     error = system('ipython sensitivity.py -- test_data/merged_all.txt' + options['hide'])

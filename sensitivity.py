@@ -16,10 +16,11 @@ optional arguments:
 # And TS should be log( likelihood ) [unitless]
 
 import sys
-import math
+import argparse
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
 import numpy as np
+
 
 def main(infile, hide):
     try:
@@ -31,7 +32,7 @@ def main(infile, hide):
     # Find median of the null hypothesis
     ts_null = data[data[:, 0] == 0.0][:, 2]  # Isolate the list of all TS values for flux==0
     median_bg = np.median(ts_null)
-    print('median of the background-only trials is {}'.format(median_bg))
+    print 'median of the background-only trials is {}'.format(median_bg)
 
     plt.figure()
     plt.yscale('log')
@@ -39,23 +40,23 @@ def main(infile, hide):
     plt.ylabel('Rate/bin')
     bins = np.arange(0, 10, 1)
     unique_fluxes = np.unique(data[:, 0])  # sorted
-    print('Sorted list of unique fluxes: {})'.format(unique_fluxes))
+    print 'Sorted list of unique fluxes: {})'.format(unique_fluxes)
     ps = []
     for flux in unique_fluxes:
         ts = data[data[:, 0] == flux][:, 2]  # Isolate the list of all TS values for this True Flux
         plt.hist(ts, bins, histtype='step')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
-        print('number of entries with flux {} is {} with {}% over the median from background.'.format(flux, len(ts), p * 100))
+        print 'number of entries with flux {} is {} with {}% over the median from background.'.format(flux, len(ts), p * 100)
         ps.append(p)
 
     # Find the 90% crossing point using the spline interpolation
     xs = np.linspace(unique_fluxes[0], unique_fluxes[-1:], 1000)
     spl = UnivariateSpline(unique_fluxes, ps, k=3, s=0.1)
     for x in xs:
-        if (spl(x) > 0.9):
+        if spl(x) > 0.9:
             sens = x
             break
-    print('\nSensitivity is: {:0.3f}'.format(sens))
+    print '\nSensitivity is: {:0.3f}'.format(sens)
 
     plt.figure()
     plt.xlabel('Flux')
@@ -75,7 +76,6 @@ def main(infile, hide):
 
 
 if __name__ == "__main__":
-    import argparse
     parser = argparse.ArgumentParser(description=__doc__,)
 
     parser.add_argument(
@@ -94,7 +94,7 @@ if __name__ == "__main__":
         help='Set to not show the plots.')
 
     args = parser.parse_args()
-    if (len(sys.argv) == 2 or len(sys.argv) == 3):
+    if len(sys.argv) == 2 or len(sys.argv) == 3:
         main(args.inputfile, args.hide)
     else:
         parser.print_help()
