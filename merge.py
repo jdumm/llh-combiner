@@ -224,7 +224,7 @@ if __name__ == "__main__":
       '--diagnostic',
       default=False,
       action="store_true",
-      help='Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.')
+      help='Set to run special diagnostics to visualize results. You may have to force quit the process if you don\'t want to go through all trials.')
 
 	# Bias correction flag
 	parser.add_argument(
