@@ -1,5 +1,22 @@
 #!/usr/bin/env python
 
+r"""
+A utility for examining any possible bias in the flux measurement.  Operates on 'merged' input files.
+
+usage: bias.py [-h] [--hide] [FILE] [FILE [FILE ...]]
+
+positional arguments:
+  FILE        Path to input file containing results of (pre-merged) scrambled trials.
+  FILE        Path to file to be merged.
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --hide      Set to not show the plots.
+"""
+
+# Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
+# And TS should be log( likelihood ) [unitless]
+
 import sys
 import math
 import matplotlib.pyplot as plt
@@ -8,12 +25,6 @@ import numpy as np
 from scipy.optimize import curve_fit
 from os import remove
 from shutil import move
-
-r"""A utility for examining any possible bias in the flux measurement.  Operates on 'merged' input files.
-"""
-
-# Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
-# And TS should be log( likelihood ) [unitless]
 
 
 def func(x, a_):

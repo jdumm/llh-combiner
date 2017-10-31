@@ -1,7 +1,22 @@
 #!/usr/bin/env python
 
-"""Run automatically the scripts to get the sensitivity with or without correction of the biases
- instead of running yourself each script."""
+r"""
+Run automatically the scripts to get the sensitivity with or without correction of the biases
+ instead of running yourself each script.
+ 
+usage: get_sensitivity.py [-h] [--interp] [--diagnostic] [--bias [BIAS [BIAS ...]]] [--hide] [files [files ...]]
+
+positional arguments:
+  files                 List of one or more input files to be merged.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --interp              Set to interpolate between sample points using splines. Leave unset for naive summing at grid points.
+  --diagnostic          Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.
+  --bias [BIAS [BIAS ...]]
+                        Set to correct bias of the following files.
+  --hide                Set to not show the plots.
+ """
 
 import sys
 import argparse
@@ -73,7 +88,7 @@ if __name__ == "__main__":
         '--diagnostic',
         default=False,
         action="store_true",
-        help='Set to run special diagnostics to visualize results.  Leave unset for usual usage.')
+        help='Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.')
 
     # Bias correction flag
     parser.add_argument(
@@ -81,7 +96,7 @@ if __name__ == "__main__":
         nargs="*",
         default='',
         type=str,
-        help='Set to correct bias of the following files. Leave unset for usual usage.')
+        help='Set to correct bias of the following files.')
 
     # Hide flag
     parser.add_argument(

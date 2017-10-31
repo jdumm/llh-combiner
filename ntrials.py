@@ -1,11 +1,20 @@
 #!/usr/bin/env python
+r"""
+Just open a file and report how many trials take place at each flux value.  Print the results.
+
+usage: ntrials.py [-h] [inputfile]
+
+positional arguments:
+  inputfile   Path to results input file to be shuffled.
+
+optional arguments:
+  -h, --help  show this help message and exit
+"""
 
 import sys
 import math
 import numpy as np
 
-r"""Just open a file and report how many trials take place at each flux value.  Print the results.
-"""
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
 # And TS should be log( likelihood ) [unitless]
 

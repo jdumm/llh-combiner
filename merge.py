@@ -1,13 +1,27 @@
 #!/usr/bin/env python
 
+r"""
+Merge two sets of files representing log-likelihood vs flux. Each trial's original flux, joint best-fit flux, and max TS are written to std output with line break.  Assumes input files will have a header of 3 numbers: minimum flux, maximum flux, number of sample points.  The following lines are assumed to start with the flux and then nsamples of the log-likelihood function.  Option to interpolate between sampling points or use straight sum at sampling points, in which case the flux range and number of sample must match.
+
+usage: merge.py [-h] [--interp] [--diagnostic] [--bias] [files [files ...]]
+
+positional arguments:
+  files         List of one or more input files to be merged followed by the single output file name. At least two arguments required.
+
+optional arguments:
+  -h, --help    show this help message and exit
+  --interp      Set to interpolate between sample points using splines. Leave unset for naive summing at grid points.
+  --diagnostic  Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.
+  --bias        Set to correct bias from a datafile output of bias.py.
+
+"""
+
 import sys
 import math
 from re import match
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 
-r"""Merge two sets of files representing log-likelihood vs flux. Each trial's original flux, joint best-fit flux, and max TS are written to std output with line break.  Assumes input files will have a header of 3 numbers: minimum flux, maximum flux, number of sample points.  The following lines are assumed to start with the flux and then nsamples of the log-likelihood function.  Option to interpolate between sampling points or use straight sum at sampling points, in which case the flux range and number of sample must match.
-"""
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
 # And the joint TS should be log( likelihood ) [unitless]
 
@@ -210,14 +224,14 @@ if __name__ == "__main__":
       '--diagnostic',
       default=False,
       action="store_true",
-      help='Set to run special diagnostics to visualize results.  Leave unset for usual usage.')
+      help='Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.')
 
 	# Bias correction flag
 	parser.add_argument(
       '--bias',
       default=False,
       action="store_true",
-      help='Set to correct bias from a datafile output of bias.py. Leave unset for usual usage.')
+      help='Set to correct bias from a datafile output of bias.py.')
 
 	args = parser.parse_args()
 	if (len(sys.argv) >= 2 and len(args.files) >= 2):

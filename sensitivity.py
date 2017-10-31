@@ -1,16 +1,25 @@
 #!/usr/bin/env python
 
+r"""
+Read and display test statistics in sensitivity calculation. Assumes input file has 3 columns: True Flux, Best-fit Flux, and (joint) TS.
+
+usage: sensitivity.py [-h] [--hide] [FILE]
+
+positional arguments:
+  FILE        Path to input file containing results of (pre-merged) scrambled trials.
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --hide      Set to not show the plots.
+"""
+# Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
+# And TS should be log( likelihood ) [unitless]
+
 import sys
 import math
 import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
 import numpy as np
-
-r"""Read and display test statistics in sensitivity calculation. Assumes input file has 3 columns: True Flux, Best-fit Flux, and (joint) TS.
-"""
-# Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
-# And TS should be log( likelihood ) [unitless]
-
 
 def main(infile, hide):
     try:
