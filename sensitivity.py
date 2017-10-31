@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 r"""
-Read and display test statistics in sensitivity calculation. Assumes input file has 3 columns: True Flux, Best-fit Flux, and (joint) TS.
+Read and display test statistics in sensitivity calculation. Assumes input file has 3 columns: True Flux, Best-fit Flux, and TS.
 
 usage: sensitivity.py [-h] [--hide] [FILE]
 

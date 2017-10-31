@@ -10,7 +10,7 @@ positional arguments:
 
 optional arguments:
   -h, --help    show this help message and exit
-  --interp      Set to interpolate between sample points using splines. Leave unset for naive summing at grid points.
+  --interp      Set to interpolate between sample points using linear interpolation. Should be used for bias correction. Leave unset for naive summing at grid points.
   --diagnostic  Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.
   --bias        Set to correct bias from a datafile output of bias.py.
 
@@ -217,7 +217,7 @@ if __name__ == "__main__":
       '--interp',
       default=False,
       action="store_true",
-      help='Set to interpolate between sample points using splines.  Leave unset for naive summing at grid points.')
+      help='Set to interpolate between sample points using linear interpolation. Should be used for bias correction. Leave unset for naive summing at grid points.')
 
 	# Diagnostic flag
 	parser.add_argument(
