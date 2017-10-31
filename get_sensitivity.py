@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 r"""
-Run automatically the scripts to get the sensitivity with or without correction of the biases
- instead of running yourself each script.
- 
+Merge, compute and correct bias and get the sensitivity all at once. This script runs bias.py, merge.py and sensitivity.py so that you basically don't need to run them.
+
+You need the files to have the same number of trials for each flux to merge them. ntrials.py can be used to determine that.
+
 usage: get_sensitivity.py [-h] [--interp] [--diagnostic] [--bias [BIAS [BIAS ...]]] [--hide] [files [files ...]]
 
 positional arguments:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 r"""
-A utility for examining any possible bias in the flux measurement.  Operates on 'merged' input files.
+A utility for examining any possible bias in the flux measurement.  Operates on 'merged' input files. Can write bias in files so that it can be corrected by merge.py.
 
 usage: bias.py [-h] [--hide] [FILE] [FILE [FILE ...]]
 
