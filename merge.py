@@ -78,11 +78,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
         line_count += 1
         lines = []
         for f in fs:
-<<<<<<< HEAD
             line = np.array([float(number) for number in f.readline().strip().split()])
-=======
-            line = np.array(map(float, f.readline().strip().split()))
->>>>>>> a68ba14640bf332eb5ee49b415ee648a107ec15a
             lines.append(line)
             if len(line) == 0:
                 end_of_file = True  # end of at least one file (trailing lines in other files ignored)
@@ -95,13 +91,8 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
 
         if interpolate:
             a_ = []
-<<<<<<< HEAD
             for index, bias in enumerate(bs):
                 a_.append(float(bias[3]))
-=======
-            for index in enumerate(bs):
-                a_.append(float(bs[index][3]))
->>>>>>> a68ba14640bf332eb5ee49b415ee648a107ec15a
             #print('Finding max by interpolating between grid points...')
             # Not sure if we should aim to have this be an option or decide on one method for interpolation
             interp_opt = 'linear'
