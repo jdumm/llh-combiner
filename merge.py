@@ -90,9 +90,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False):
             break  # Break out of outer loop over lines in file
 
         if interpolate:
-            a_ = []
-            for index, bias in enumerate(bs):
-                a_.append(float(bias[3]))
+            a_ = [float(word[3]) for word in bs]
             #print('Finding max by interpolating between grid points...')
             # Not sure if we should aim to have this be an option or decide on one method for interpolation
             interp_opt = 'linear'
