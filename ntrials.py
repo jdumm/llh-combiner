@@ -61,8 +61,13 @@ def main(infile):
 
     print 'Unique fluxes: {}'.format(unique_fluxes)
 
+<<<<<<< HEAD
     for n, flux in enumerate(fluxes):
         print 'For flux = {:0.2e}, nTrials = {}'.format(flux, count_at_fluxes[n])
+=======
+    for n in enumerate(fluxes):
+        print 'For flux = {:0.2e}, nTrials = {}'.format(fluxes[n], count_at_fluxes[n])
+>>>>>>> a68ba14640bf332eb5ee49b415ee648a107ec15a
 
 
 if __name__ == "__main__":
