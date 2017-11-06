@@ -25,7 +25,7 @@ from scipy.interpolate import UnivariateSpline
 # And the joint TS should be log( likelihood ) [unitless]
 
 
-def main(files, interpolate=False, diagnostic=False, bias=False):
+def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False):
     infiles = files[:-1]  # All but the last argument are input files
     outfile = files[-1]  # Last argument is the output file
     fs = []  # input file handles
@@ -229,8 +229,15 @@ if __name__ == "__main__":
         action="store_true",
         help='Set to correct bias from a datafile output of bias.py.')
 
+    # Unblinded flag
+    parser.add_argument(
+        '--unblinded',
+        default=False,
+        action="store_true",
+        help='Set to get the p-value of the unblinded data.')
+
     args = parser.parse_args()
     if len(sys.argv) >= 2 and len(args.files) >= 2:
-        main(args.files, args.interp, args.diagnostic, args.bias)
+        main(args.files, args.interp, args.diagnostic, args.bias, args.unblinded)
     else:
         parser.print_help()

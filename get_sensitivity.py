@@ -107,10 +107,18 @@ if __name__ == "__main__":
         action="store_true",
         help='Set to not show the plots.')
 
+    # Unblinded flag
+    parser.add_argument(
+        '--unblinded',
+        default=False,
+        action="store_true",
+        help='Set to get the p-value of the unblinded data.')
+
     args = parser.parse_args()
     options = {'interp': ' --interp' * args.interp,
                'diagnostic': ' --diagnostic' * args.diagnostic,
-               'hide': ' --hide' * args.hide}
+               'hide': ' --hide' * args.hide,
+               'unblinded': '--unblinded' * args.unblinded}
 
     if len(sys.argv) >= 2:
         main(args.files, args.bias, options)

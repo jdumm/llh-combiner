@@ -22,7 +22,7 @@ from scipy.interpolate import UnivariateSpline
 import numpy as np
 
 
-def main(infile, hide):
+def main(infile, hide, unblinded):
     try:
         data = np.loadtxt(infile)
     except IOError:
@@ -86,15 +86,22 @@ if __name__ == "__main__":
         help="Path to input file containing results of (pre-merged) scrambled trials.",
         metavar="FILE")
 
-# Hide flag
+    # Hide flag
     parser.add_argument(
         '--hide',
         default=False,
         action="store_true",
         help='Set to not show the plots.')
 
+    # Unblinded flag
+    parser.add_argument(
+        '--unblinded',
+        default=False,
+        action="store_true",
+        help='Set to get the p-value of the unblinded data.')
+
     args = parser.parse_args()
     if len(sys.argv) == 2 or len(sys.argv) == 3:
-        main(args.inputfile, args.hide)
+        main(args.inputfile, args.hide, args.unblinded)
     else:
         parser.print_help()
