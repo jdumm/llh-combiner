@@ -101,7 +101,7 @@ if __name__ == "__main__":
         help='Set to get the p-value of the unblinded data.')
 
     args = parser.parse_args()
-    if len(sys.argv) == 2 or len(sys.argv) == 3:
+    if len(sys.argv) >= 2 and len(sys.argv) <= 4:
         main(args.inputfile, args.hide, args.unblinded)
     else:
         parser.print_help()

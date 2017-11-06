@@ -46,8 +46,7 @@ def main(files, bias_files, options):
                 exit(0)
             system('rm ' + merged_file)
 
-    # Removing bias line from files we do not correct
-    if files:
+    if files: # Removing bias line from files we do not correct
         for file_ in files:
             temp_file = 'temporary_file.txt'
             with open(temp_file, 'w') as tempfile:
@@ -61,10 +60,10 @@ def main(files, bias_files, options):
 
     print '\nMerging and sensitivity'
     error = system('ipython merge.py -- ' + ' '.join(files) + ' ' + ' '.join(bias_files)
-                   + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['diagnostic'])
+                   + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['unblinded'] + options['diagnostic'])
     if error:
         exit(0)
-    error = system('ipython sensitivity.py -- test_data/merged_all.txt' + options['hide'])
+    error = system('ipython sensitivity.py -- test_data/merged_all.txt' + options['unblinded'] + options['hide'])
     system('rm test_data/merged_all.txt')
 
 if __name__ == "__main__":
@@ -118,7 +117,7 @@ if __name__ == "__main__":
     options = {'interp': ' --interp' * args.interp,
                'diagnostic': ' --diagnostic' * args.diagnostic,
                'hide': ' --hide' * args.hide,
-               'unblinded': '--unblinded' * args.unblinded}
+               'unblinded': ' --unblinded' * args.unblinded}
 
     if len(sys.argv) >= 2:
         main(args.files, args.bias, options)
