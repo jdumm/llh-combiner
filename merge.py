@@ -78,7 +78,22 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
         line_count += 1
         lines = []
         for f in fs:
-            line = np.array([float(number) for number in f.readline().strip().split()])
+            if line_count == 1:
+                line = f.readline().strip().split()
+                if line[0] == 'Unblinded':
+                    if unblinded:
+                        line[0] = -1 # Replace 'unblinded' by -1
+                        line = np.array([float(number) for number in line])
+                    else:
+                        line = np.array([float(number) for number in f.readline().strip().split()])
+                else:
+                    if unblinded:
+                        print 'Error: No unblinded data for file', f
+                        exit(0)
+                    else:
+                        line = np.array([float(number) for number in line])
+            else:
+                line = np.array([float(number) for number in f.readline().strip().split()])
             lines.append(line)
             if len(line) == 0:
                 end_of_file = True  # end of at least one file (trailing lines in other files ignored)
