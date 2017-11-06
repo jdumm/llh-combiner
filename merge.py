@@ -31,7 +31,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
     fs = []  # input file handles
     hs = []  # headers
     bs = []  # bias
-    for infile in infiles:
+    for infile in infiles: # Store filenames, headers and biases
         try:
             fs.append(open(infile, 'r'))  # keep a list of the open files
             hs.append(fs[-1].readline().split())  # append header of the last file opened...
@@ -143,13 +143,13 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
                 overflow_count += 1
                 #diagnostic = True
             # Check if true flux is contained within 1.0 of the peak (corresponding to 0.5 in log-likelihood ratio).
-            for i in range(0, len(sum_array), 1):
-                if sum_array[i] > maxllh - 1.0:
+            for i, value in enumerate(sum_array):
+                if value > maxllh - 1.0:
                     lowi = i
                     break
-            for i in range(len(sum_array) - 1, 0 - 1, -1):
-                if sum_array[i] > maxllh - 1.0:
-                    highi = i
+            for i, value in enumerate(reversed(sum_array)):
+                if value > maxllh - 1.0:
+                    highi = len(sum_array) - i - 1
                     break
             lowflux = lowi * ((flux_max + padding) - (flux_min - padding)) / (grid_upscale * nsamples)
             highflux = highi * ((flux_max + padding) - (flux_min - padding)) / (grid_upscale * nsamples)
