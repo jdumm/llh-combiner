@@ -39,6 +39,19 @@ def main(infile, hide, unblinded):
     plt.xlabel('TS')
     plt.ylabel('Rate/bin')
     bins = np.arange(0, 10, 1)
+    flux_unblinded = 0
+    ts_unblinded = 0
+    ul = 0
+    if unblinded:
+        if data[0, 0] != -1:
+            print "Error: no unblinded results in", infile
+            exit(0)
+        flux_unblinded = data[0, 1]
+        ts_unblinded = data[0, 2]
+        data = data[1:]
+        
+        p_value = float(len(ts_null[ts_null > ts_unblinded])) / float(len(ts_null))
+        print 'p-value is', p_value * 100, '%'
     unique_fluxes = np.unique(data[:, 0])  # sorted
     print 'Sorted list of unique fluxes: {})'.format(unique_fluxes)
     ps = []
@@ -46,6 +59,9 @@ def main(infile, hide, unblinded):
         ts = data[data[:, 0] == flux][:, 2]  # Isolate the list of all TS values for this True Flux
         plt.hist(ts, bins, histtype='step')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
+        if unblinded and ul == 0 and float(len(ts[ts > ts_unblinded])) / float(len(ts)) > 0.9:
+            ul = flux
+            print 'upper limit at 90% confidence level is', ul
         print 'number of entries with flux {} is {} with {}% over the median from background.'.format(flux, len(ts), p * 100)
         ps.append(p)
 
