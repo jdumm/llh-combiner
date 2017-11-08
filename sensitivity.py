@@ -3,7 +3,10 @@
 r"""
 Read and display test statistics in sensitivity calculation. Assumes input file has 3 columns: True Flux, Best-fit Flux, and TS.
 
-usage: sensitivity.py [-h] [--hide] [FILE]
+"""
+
+r"""
+usage: sensitivity.py [-h] [--hide] [--unblinded] [FILE]
 
 positional arguments:
   FILE        Path to input file containing results of (pre-merged) scrambled trials.
@@ -11,6 +14,7 @@ positional arguments:
 optional arguments:
   -h, --help  show this help message and exit
   --hide      Set to not show the plots.
+  --unblinded Set to get the p-value and upper limit of the unblinded data.
 """
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
 # And TS should be log( likelihood ) [unitless]

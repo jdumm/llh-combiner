@@ -2,7 +2,9 @@
 
 r"""
 Shuffle a scrambled-trial results file to simply re-order for later merging.  It serves as a crosscheck that the order of the trials does not matter.  Since a file is expected to have multiple trials at many flux values, the flux change indices are found.  Shuffling only occurs inside of these ranges.  Shuffle.py sorts the entries before shuffling to account for disjoint trials where trials from some flux values are scattered throughout the file.
+"""
 
+r"""
 usage: shuffle.py [-h] [inputfile] [outputfile]
 
 positional arguments:

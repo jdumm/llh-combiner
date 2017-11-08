@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 r"""
 Just open a file and report how many trials take place at each flux value.  Print the results.
+"""
 
+r"""
 usage: ntrials.py [-h] [inputfile]
 
 positional arguments:

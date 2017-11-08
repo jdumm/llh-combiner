@@ -2,7 +2,9 @@
 
 r"""
 A utility for examining any possible bias in the flux measurement.  Operates on 'merged' input files. Can write bias in files so that it can be corrected by merge.py.
+"""
 
+r"""
 usage: bias.py [-h] [--hide] [FILE] [FILE [FILE ...]]
 
 positional arguments:

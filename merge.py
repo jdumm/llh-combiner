@@ -2,8 +2,10 @@
 
 r"""
 Merge two or more sets of files representing log-likelihood vs flux. Each trial's original flux, joint best-fit flux, and max TS are written to std output with line break.  Assumes input files will have a header of 3 numbers: minimum flux, maximum flux, number of sample points. If the header is preceded by the bias, it will be corrected if the --bias option is used. The following lines are assumed to start with the flux and then nsamples of the log-likelihood function.  Option to interpolate between sampling points or use straight sum at sampling points, in which case the flux range and number of sample must match.
+"""
 
-usage: merge.py [-h] [--interp] [--diagnostic] [--bias] [files [files ...]]
+r"""
+usage: merge.py [-h] [--interp] [--diagnostic] [--bias] [--unblinded] [files [files ...]]
 
 positional arguments:
   files         List of one or more input files to be merged followed by the single output file name. At least two arguments required.
@@ -13,7 +15,7 @@ optional arguments:
   --interp      Set to interpolate between sample points using linear interpolation. Should be used for bias correction. Leave unset for naive summing at grid points.
   --diagnostic  Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.
   --bias        Set to correct bias from a datafile output of bias.py.
-
+  --unblinded   Set to get the p-value of the unblinded data.
 """
 
 import sys

@@ -4,19 +4,22 @@ r"""
 Merge, compute and correct bias and get the sensitivity all at once. This script runs bias.py, merge.py and sensitivity.py so that you basically don't need to run them.
 
 You need the files to have the same number of trials for each flux to merge them. ntrials.py can be used to determine that.
-
-usage: get_sensitivity.py [-h] [--interp] [--diagnostic] [--bias [BIAS [BIAS ...]]] [--hide] [files [files ...]]
+ """
+ 
+r"""
+usage: get_sensitivity.py [-h] [files [files ...]] [--bias [BIAS [BIAS ...]]] [--interp] [--unblinded] [--diagnostic]  [--hide]
 
 positional arguments:
   files                 List of one or more input files to be merged.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --interp              Set to interpolate between sample points using splines. Leave unset for naive summing at grid points.
+  --interp              Set to interpolate between sample points using linear interpolation. Leave unset for naive summing at grid points.
   --diagnostic          Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.
   --bias [BIAS [BIAS ...]]
                         Set to correct bias of the following files.
   --hide                Set to not show the plots.
+  --unblinded           Set to get the p-value of the unblinded data.
  """
 
 import sys
