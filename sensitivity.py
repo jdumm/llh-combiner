@@ -55,7 +55,6 @@ def main(infile, hide, unblinded):
         data = data[1:]
         
         p_value = float(len(ts_null[ts_null > ts_unblinded])) / float(len(ts_null))
-        print 'p-value is', p_value * 100, '%'
     unique_fluxes = np.unique(data[:, 0])  # sorted
     print 'Sorted list of unique fluxes: {})'.format(unique_fluxes)
     ps = []
@@ -65,7 +64,6 @@ def main(infile, hide, unblinded):
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
         if unblinded and ul == 0 and float(len(ts[ts > ts_unblinded])) / float(len(ts)) > 0.9:
             ul = flux
-            print 'upper limit at 90% confidence level is', ul
         print 'number of entries with flux {} is {} with {}% over the median from background.'.format(flux, len(ts), p * 100)
         ps.append(p)
 
@@ -77,6 +75,10 @@ def main(infile, hide, unblinded):
             sens = x
             break
     print '\nSensitivity is: {:0.3f}'.format(sens)
+
+    if unblinded:
+        print 'p-value is', p_value * 100, '%'
+        print 'Upper limit at 90% confidence level is', ul
 
     plt.figure()
     plt.xlabel('Flux')
