@@ -27,15 +27,17 @@ def main(infile):
     """
     Output the number of trials per generated flux.
     """
+    rows_to_skip = 1
     try:
         f = open(infile, 'r')
         h = f.readline().split()  # header
-        skip_bias = 0
         if h[0] == 'Bias':
-            skip_bias = 1
+            rows_to_skip += 1
             h = f.readline().split()  # header
+        if f.readline().split()[0] == 'Unblinded':
+            rows_to_skip += 1
         f.close()
-        data = np.loadtxt(infile, skiprows=1 + skip_bias)
+        data = np.loadtxt(infile, skiprows=rows_to_skip)
         order = data[:, 0].argsort()  # get index based on first column
         data = data[order]  # now ordered by flux
 

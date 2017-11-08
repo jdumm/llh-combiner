@@ -47,11 +47,19 @@ def main(infile, outfile):
     """
     Shuffle the trials.
     """
+    rows_to_skip = 1
     try:
         f = open(infile, 'r')
         h = f.readline().split()  # header
+        if h[0] == 'Bias':
+            h = f.readline().split()  # header
+            rows_to_skip += 1
+        first_line = f.readline().split()
+        if first_line[0] == 'Unblinded':
+            unblinded = first_line
+            rows_to_skip += 1
         f.close()
-        data = np.loadtxt(infile, skiprows=1)
+        data = np.loadtxt(infile, skiprows=rows_to_skip)
         order = data[:, 0].argsort()  # get index based on first column
         data = data[order]  # now ordered by flux
     except IOError:
@@ -67,7 +75,7 @@ def main(infile, outfile):
         np.random.shuffle(subarray)  # editing 'subarray' edits the original 'data'
 
     try:
-        np.savetxt(outfile, data, fmt='%0.2e', header='{} {} {}'.format(h[0], h[1], h[2]), comments='')
+        np.savetxt(outfile, data, fmt='%0.2e', header='{} {} {}\n{}'.format(h[0], h[1], h[2], ' '.join(unblinded)), comments='')
     except IOError:
         print "Error: Unable to open output file {}.".format(outfile)
         return 0
