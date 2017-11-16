@@ -45,7 +45,8 @@ def main(infile, hide, unblinded):
     bins = np.arange(0, 10, 1)
     flux_unblinded = 0
     ts_unblinded = 0
-    ul = 0
+    ul = 0 # upper limit
+
     if unblinded:
         if data[0, 0] != -1:
             print "Error: no unblinded results in", infile
@@ -55,36 +56,47 @@ def main(infile, hide, unblinded):
         data = data[1:]
         
         p_value = float(len(ts_null[ts_null > ts_unblinded])) / float(len(ts_null))
+
     unique_fluxes = np.unique(data[:, 0])  # sorted
     print 'Sorted list of unique fluxes: {})'.format(unique_fluxes)
     ps = []
+    cl = [] # Confidence level: probability to have a test statistic larger than ts_unblinded
     for flux in unique_fluxes:
         ts = data[data[:, 0] == flux][:, 2]  # Isolate the list of all TS values for this True Flux
         plt.hist(ts, bins, histtype='step')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
-        if unblinded and ul == 0 and float(len(ts[ts > ts_unblinded])) / float(len(ts)) > 0.9:
-            ul = flux
+        if unblinded:
+            cl.append(float(len(ts[ts > ts_unblinded])) / float(len(ts)))
         print 'number of entries with flux {} is {} with {}% over the median from background.'.format(flux, len(ts), p * 100)
         ps.append(p)
 
-    # Find the 90% crossing point using the spline interpolation
+    # Find the 90% crossing point using the spline interpolation for sensitivity
     xs = np.linspace(unique_fluxes[0], unique_fluxes[-1:], 1000)
-    spl = UnivariateSpline(unique_fluxes, ps, k=3, s=0.1)
+    spl_ps = UnivariateSpline(unique_fluxes, ps, k=3, s=0.1)
+
     for x in xs:
-        if spl(x) > 0.9:
+        if spl_ps(x) > 0.9:
             sens = x
             break
+
     print '\nSensitivity is: {:0.3f}'.format(sens)
 
     if unblinded:
+        # Find the 90% crossing point using the spline interpolation for upper limit
+        spl_cl = UnivariateSpline(unique_fluxes, cl, k=3, s=0.1)
+        for x in xs:
+            if spl_cl(x) > 0.9:
+                ul = x
+                break
+
         print 'p-value is', p_value * 100, '%'
-        print 'Upper limit at 90% confidence level is', ul
+        print 'Upper limit at 90% confidence level is {:0.2f}'.format(ul)
 
     plt.figure()
     plt.xlabel('Flux')
     plt.ylabel('Fraction with TS > background median')
     plt.plot(unique_fluxes, ps, 'ko', ms=5)
-    plt.plot(xs, spl(xs), 'r', lw=3)
+    plt.plot(xs, spl_ps(xs), 'r', lw=3)
     ax = plt.gca()
     ymin, ymax = ax.get_ylim()
     plt.plot([sens, sens], [ymin, 0.9], 'g', lw=2)
