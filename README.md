@@ -47,7 +47,7 @@ optional arguments:
   --unblinded           Set to get the p-value of the unblinded data.
 ```
 
-##### Example
+##### Usage example
 ```
 ipython get_sensitivity.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/results_9yrANTshowers_KRAg5e7_2000trials_30sept.txt --bias test_data/results_9yrANTmuons_KRAg5e7_2000trials_30sept.txt --interp --hide
 ```
