@@ -2,7 +2,7 @@
 A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman and Cousins(TODO) upper limits and sensitivities.
 
 ## File format
-The input files are txt files usually named with the prefix results_
+The input files are txt files usually named with the prefix results_  
 They basically contain the llik ratio curves of the pseudo-experiments but also the unblinded results.
 They start by the header `min_flux max_flux n_edges` then the data `generated_flux llik_ratio0 llik_ratio1 llik_ratio2...` with `llik_ratio0` corresponding to the loglik ratio of `min_flux`…
 The Unblinded results should be added by hand just after the header with the `generated_flux` replaced by `Unblinded`
@@ -25,7 +25,7 @@ Unblinded   0.00e+00    -6.52e-02   -1.35e-01   -2.09e-01...
 The bias.py script will write the bias of this file before the header.
 
 ## get_sensitivity.py
-One script to run them all!
+One script to run them all!  
 This script has been made to **merge**, **compute and correct bias** and **get the sensitivity** all at once. This script runs bias.py, merge.py and sensitivity.py so that you basically don't need to run them yourself.
 
 You need the files to have the same number of trials for each flux to merge them. ntrials.py can be used to determine that.
@@ -56,7 +56,7 @@ ipython get_sensitivity.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data
 Compute the bias of each analysis and write it in the first line of the file so that it can be corrected by merge.py.
 
 ### merge.py
-For each trial, it sum the log-likelihood ratios of the different analyses (if more than one file given as argument) and fit the flux by maximizing the log-likelihood curve. The output file contains the generated flux, the fitted flux and the maximum of the log-likelihood ratio for each trial and for the unblinded data.
+For each trial, it sum the log-likelihood ratios of the different analyses (if more than one file given as argument) and fit the flux by maximizing the log-likelihood curve. The output file contains the generated flux, the fitted flux and the maximum of the log-likelihood ratio for each trial and for the unblinded data.  
 If a bias is written in an input file by the bias.py script, it will correct it. 
 
 ### sensitivity.py
@@ -81,7 +81,7 @@ For flux = 2.00e+00, nTrials = 2000
 ```
 
 ## shuffle.py
-The randomized ordering of the trials prior to merging should not matter, provided that there are the right number of trials at the right flux values.  This principle can be verified by shuffling the files and re-running the sensitivity calculation.
+The randomized ordering of the trials prior to merging should not matter, provided that there are the right number of trials at the right flux values. This principle can be verified by shuffling the files and re-running the sensitivity calculation.
 
 ##### Usage example
 ```
