@@ -254,6 +254,8 @@ if __name__ == "__main__":
         help='Set to get the p-value of the unblinded data.')
 
     args = parser.parse_args()
+    if args.bias:
+        args.interp = True
     if len(sys.argv) >= 2 and len(args.files) >= 2:
         main(args.files, args.interp, args.diagnostic, args.bias, args.unblinded)
     else:

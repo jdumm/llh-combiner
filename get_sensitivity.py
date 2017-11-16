@@ -121,6 +121,8 @@ if __name__ == "__main__":
                'diagnostic': ' --diagnostic' * args.diagnostic,
                'hide': ' --hide' * args.hide,
                'unblinded': ' --unblinded' * args.unblinded}
+    if args.bias:
+        args.interp = True
 
     if len(sys.argv) >= 2:
         main(args.files, args.bias, options)
