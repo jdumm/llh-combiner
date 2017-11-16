@@ -89,6 +89,7 @@ def main(infile, hide, unblinded):
                 ul = x
                 break
 
+        print 'Fitted flux is', flux_unblinded
         print 'p-value is', p_value * 100, '%'
         print 'Upper limit at 90% confidence level is {:0.2f}'.format(ul)
 
