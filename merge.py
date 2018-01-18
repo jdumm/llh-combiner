@@ -102,6 +102,8 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
                 break
             if line[0] != lines[0][0]:  # Check that all fluxes for this trial are equal to the first file
                 print 'Error: Fluxes not equal for this trial! Do you use files with the same number of trials ?'  # Maybe need to set an equality tolerance here?
+                print line[0], "!=", lines[0][0]
+                exit(0)
                 return 0
         if end_of_file:
             break  # Break out of outer loop over lines in file
@@ -186,10 +188,12 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
                     plt.plot(x, line[1:], 'ko', ms=3, alpha=0.6)
                     coarse_sum_array += line[1:]
                 plt.plot(x, coarse_sum_array, 'ko', ms=5)
+                plt.xlabel("flux")
+                plt.ylabel("log-likelihood ratio")
                 ax = plt.gca()
                 ymin, ymax = ax.get_ylim()
                 plt.plot([maxflux, maxflux], [ymin, ymax], 'g', lw=3)
-                ax.text(0.15, 0.15, '(max flux, max llh) = ({:0.2e}, {:0.2e})'.format(maxflux, maxllh), verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
+                ax.text(0.15, 0.15, '(max flux, max llh) = ({:0.2}, {:0.2})'.format(maxflux, maxllh), verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
                 plt.show()
                 #diagnostic = False
 
