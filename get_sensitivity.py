@@ -65,7 +65,8 @@ def main(files, bias_files, save_name, options):
 
     print '\nMerging and sensitivity'
     error = system('ipython merge.py -- ' + ' '.join(files) + ' ' + ' '.join(bias_files)
-                   + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['unblinded'] + options['diagnostic'] + bool(save_name)*(" --save "+save_name))
+                   + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['unblinded'] 
+                   + options['diagnostic'] + options['hide'] + bool(save_name)*(" --save "+save_name))
     if error:
         exit(0)
     print 'ipython sensitivity.py -- test_data/merged_all.txt' + options['unblinded'] + options['hide'] + bool(save_name)*(" --save "+save_name)

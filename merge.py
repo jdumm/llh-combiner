@@ -28,7 +28,7 @@ from scipy.interpolate import UnivariateSpline
 # And the joint TS should be log( likelihood ) [unitless]
 
 
-def main(files, save_name, interpolate=False, diagnostic=False, bias=False, unblinded=False):
+def main(files, save_name, interpolate=False, diagnostic=False, bias=False, hide=False, unblinded=False):
     infiles = files[:-1]  # All but the last argument are input files
     outfile = files[-1]  # Last argument is the output file
     fs = []  # input file handles
@@ -196,7 +196,8 @@ def main(files, save_name, interpolate=False, diagnostic=False, bias=False, unbl
                 ax.text(0.15, 0.15, '(max flux, max llh) = ({:0.2}, {:0.2})'.format(maxflux, maxllh), verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
                 if save_name:
                     plt.savefig('plots/FitUnblinding_'+save_name+'.pdf')
-                plt.show()
+                if not hide:
+                    plt.show()
                 #diagnostic = False
 
         else:  # don't interpolate
@@ -259,6 +260,13 @@ if __name__ == "__main__":
         action="store_true",
         help='Set to get the p-value of the unblinded data.')
 
+    # Hide flag
+    parser.add_argument(
+        '--hide',
+        default=False,
+        action="store_true",
+        help='Set to not show the plots.')
+
     # Plot saving flag
     parser.add_argument(
         '--save',
@@ -271,6 +279,6 @@ if __name__ == "__main__":
     if args.bias:
         args.interp = True
     if len(sys.argv) >= 2:
-        main(args.files, args.save, args.interp, args.diagnostic, args.bias, args.unblinded)
+        main(args.files, args.save, args.interp, args.diagnostic, args.bias, args.hide, args.unblinded)
     else:
         parser.print_help()
