@@ -104,11 +104,13 @@ def main(infile, datafile, hide=False):
     plt.errorbar(unique_fluxes, medsv, xerr=0.0, yerr=[ylows, yhighs], linestyle='', marker='o', color='k')
     plt.xlabel('True Flux')
     plt.ylabel('Reco Flux')
-    x = np.arange(-0.5, np.max(unique_fluxes) + 0.5, 0.1)
+    x = np.arange(0., np.max(unique_fluxes) + 0.5, 0.1)
     plt.plot(x, x, color='k', linestyle='--')
     fit_y = [fit_a * x_ for x_ in x]
     plt.plot(x, fit_y, color='k', linestyle='-')
     plt.axis('equal')
+    EXPtopo = datafile[0].split('yr')[1].split('_')[1] # string of the type ICmuons or ANTshowers
+    plt.savefig('plots/bias_'+EXPtopo+'.pdf')
 
     plt.figure()
     bins = np.arange(0, 10, 0.5)

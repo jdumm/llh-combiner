@@ -194,6 +194,7 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
                 ymin, ymax = ax.get_ylim()
                 plt.plot([maxflux, maxflux], [ymin, ymax], 'g', lw=3)
                 ax.text(0.15, 0.15, '(max flux, max llh) = ({:0.2}, {:0.2})'.format(maxflux, maxllh), verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
+                plt.savefig('plots/FitUnblinding.pdf')
                 plt.show()
                 #diagnostic = False
 

@@ -75,6 +75,7 @@ def main(infile, hide, unblinded):
             plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux')
             ax = plt.gca()
             legend = ax.legend(loc='lower center')
+            plt.savefig('plots/TS_distrib.pdf')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
         if unblinded:
             cl.append(float(len(ts[ts > ts_unblinded])) / float(len(ts)))
@@ -117,6 +118,7 @@ def main(infile, hide, unblinded):
             verticalalignment='top', horizontalalignment='right',
             transform=ax.transAxes,
             color='g', fontsize=18)
+    plt.savefig('plots/Sensitivity.pdf')
     if not hide:
         plt.show()
 
