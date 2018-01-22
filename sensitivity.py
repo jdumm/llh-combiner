@@ -41,8 +41,9 @@ def main(infile, hide, unblinded):
     plt.figure()
     plt.yscale('log')
     plt.xlabel('TS')
-    plt.ylabel('Rate/bin')
-    bins = np.arange(0, 10, 1)
+    plt.ylabel('Density probability')
+    bin_width = 0.2
+    bins = np.arange(0, 10, bin_width)
     flux_unblinded = 0
     ts_unblinded = 0
     ul = 0 # upper limit
@@ -54,7 +55,7 @@ def main(infile, hide, unblinded):
         flux_unblinded = data[0, 1]
         ts_unblinded = data[0, 2]
         data = data[1:]
-        
+
         p_value = float(len(ts_null[ts_null > ts_unblinded])) / float(len(ts_null))
 
     unique_fluxes = np.unique(data[:, 0])  # sorted
@@ -63,7 +64,17 @@ def main(infile, hide, unblinded):
     cl = [] # Confidence level: probability to have a test statistic larger than ts_unblinded
     for flux in unique_fluxes:
         ts = data[data[:, 0] == flux][:, 2]  # Isolate the list of all TS values for this True Flux
-        plt.hist(ts, bins, histtype='step')
+        if flux == 0.:
+            plt.hist(ts, bins, normed=True, cumulative=-1, histtype='step', color='r', lw=2, label='Background')
+            
+            if unblinded:
+                plt.plot([ts_unblinded, ts_unblinded], [0., p_value], 'g', lw=2)
+                plt.plot([0, ts_unblinded], [p_value, p_value], 'g', lw=2, label='p-value: {:0.2f}'.format(p_value))
+
+        if flux == 1.:
+            plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux')
+            ax = plt.gca()
+            legend = ax.legend(loc='lower center')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
         if unblinded:
             cl.append(float(len(ts[ts > ts_unblinded])) / float(len(ts)))
