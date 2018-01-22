@@ -5,15 +5,18 @@ A utility for examining any possible bias in the flux measurement.  Operates on 
 """
 
 r"""
-usage: bias.py [-h] [--hide] [FILE] [FILE [FILE ...]]
+usage: bias.py [-h] [--hide] [--save [SAVE]] [FILE] [FILE [FILE ...]]
 
 positional arguments:
-  FILE        Path to input file containing results of (pre-merged) scrambled trials.
-  FILE        Path to file to be merged.
+  FILE           Path to input file containing results of (pre-merged)
+                 scrambled trials.
+  FILE           Path to file to be merged.
 
 optional arguments:
-  -h, --help  show this help message and exit
-  --hide      Set to not show the plots.
+  -h, --help     show this help message and exit
+  --hide         Set to not show the plots.
+  --save [SAVE]  Set to save the most usefull plots with SAVE as a filename
+                 extension.
 """
 
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
@@ -168,7 +171,7 @@ if __name__ == "__main__":
         nargs="?",
         default='',
         type=str,
-        help='Set to save the most usefull plots.')
+        help='Set to save the most usefull plots with SAVE as a filename extension.')
 
     args = parser.parse_args()
     if len(sys.argv) >= 2 and len(sys.argv) <= 7:

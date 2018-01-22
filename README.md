@@ -1,5 +1,5 @@
 # llh-combiner
-A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) or Feldman and Cousins(TODO) upper limits and sensitivities.
+A project for merging independent 1D maximum likelihood analyses to find a joint maximum likelihood.  Also calculates Neyman (strict) upper limits and sensitivities.
 
 ## File format
 The input files are txt files usually named with the prefix results_  
@@ -32,7 +32,7 @@ You need the files to have the same number of trials for each flux to merge them
 
 ##### Usage
 ```
-usage: get_sensitivity.py [-h] [--bias [BIAS [BIAS ...]]] [--interp] [--unblinded] [--diagnostic]  [--hide] [files [files ...]] 
+usage: get_sensitivity.py [-h] [--bias [BIAS [BIAS ...]]] [--interp] [--unblinded] [--diagnostic]  [--hide] [--save [SAVE]] [files [files ...]]
 
 positional arguments:
   files                 List of one or more input files to be merged.
@@ -45,6 +45,7 @@ optional arguments:
                         Set to correct bias of the following files.
   --hide                Set to not show the plots.
   --unblinded           Set to get the p-value of the unblinded data.
+  --save [SAVE]         Set to save the most usefull plots with SAVE as a name extension.
 ```
 
 ##### Usage example

@@ -5,17 +5,27 @@ Merge two or more sets of files representing log-likelihood vs flux. Each trial'
 """
 
 r"""
-usage: merge.py [-h] [--interp] [--diagnostic] [--bias] [--unblinded] [files [files ...]]
+usage: merge.py [-h] [--interp] [--diagnostic] [--bias] [--unblinded] [--hide]
+                [--save [SAVE]]
+                [files [files ...]]
 
 positional arguments:
-  files         List of one or more input files to be merged followed by the single output file name. At least two arguments required.
+  files          List of one or more input files to be merged followed by the
+                 single output file name. At least two arguments required.
 
 optional arguments:
-  -h, --help    show this help message and exit
-  --interp      Set to interpolate between sample points using linear interpolation. Should be used for bias correction. Leave unset for naive summing at grid points.
-  --diagnostic  Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.
-  --bias        Set to correct bias from a datafile output of bias.py.
-  --unblinded   Set to get the p-value of the unblinded data.
+  -h, --help     show this help message and exit
+  --interp       Set to interpolate between sample points using linear
+                 interpolation. Should be used for bias correction. Leave
+                 unset for naive summing at grid points.
+  --diagnostic   Set to run special diagnostics to visualize results. You may
+                 have to force quit the process if you don't want to go
+                 through all trials.
+  --bias         Set to correct bias from a datafile output of bias.py.
+  --unblinded    Set to get the p-value of the unblinded data.
+  --hide         Set to not show the plots.
+  --save [SAVE]  Set to save the most usefull plots with SAVE as a filename
+                 extension.
 """
 
 import sys
@@ -273,7 +283,7 @@ if __name__ == "__main__":
         nargs="?",
         default='',
         type=str,
-        help='Set to save the most usefull plots.')
+        help='Set to save the most usefull plots with SAVE as a filename extension.')
 
     args = parser.parse_args()
     if args.bias:

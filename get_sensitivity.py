@@ -7,22 +7,28 @@ You need the files to have the same number of trials for each flux to merge them
  """
  
 r"""
-usage: get_sensitivity.py [-h] [files [files ...]] [--bias [BIAS [BIAS ...]]] [--interp] [--unblinded] [--diagnostic]  [--hide]
+usage: get_sensitivity.py [-h] [--interp] [--diagnostic]
+                          [--bias [BIAS [BIAS ...]]] [--hide] [--unblinded]
+                          [--save [SAVE]]
+                          [files [files ...]]
 
 positional arguments:
   files                 List of one or more input files to be merged.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --interp              Set to interpolate between sample points using linear interpolation. Leave unset for naive summing at grid points.
-  --diagnostic          Set to run special diagnostics to visualize results. You may have to force quit the process if you don't want to go through all trials.
+  --interp              Set to interpolate between sample points using
+                        splines. Leave unset for naive summing at grid points.
+  --diagnostic          Set to run special diagnostics to visualize results.
+                        You may have to force quit the process if you don't
+                        want to go through all trials.
   --bias [BIAS [BIAS ...]]
                         Set to correct bias of the following files.
   --hide                Set to not show the plots.
   --unblinded           Set to get the p-value of the unblinded data.
-  --save [filename_extension]
-                        Set to save the most useful figures with the 'filename_extension' in their names.
+  --save [SAVE]         Set to save the most usefull plots with SAVE as a filename extension.
  """
+
 
 import sys
 import argparse
@@ -126,7 +132,7 @@ if __name__ == "__main__":
         nargs="?",
         default='',
         type=str,
-        help='Set to save the most usefull plots.')
+        help='Set to save the most usefull plots with SAVE as a filename extension.')
 
     args = parser.parse_args()
     options = {'interp': ' --interp' * args.interp,
