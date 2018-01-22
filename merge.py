@@ -28,7 +28,7 @@ from scipy.interpolate import UnivariateSpline
 # And the joint TS should be log( likelihood ) [unitless]
 
 
-def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False):
+def main(files, save_name, interpolate=False, diagnostic=False, bias=False, unblinded=False):
     infiles = files[:-1]  # All but the last argument are input files
     outfile = files[-1]  # Last argument is the output file
     fs = []  # input file handles
@@ -194,7 +194,8 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
                 ymin, ymax = ax.get_ylim()
                 plt.plot([maxflux, maxflux], [ymin, ymax], 'g', lw=3)
                 ax.text(0.15, 0.15, '(max flux, max llh) = ({:0.2}, {:0.2})'.format(maxflux, maxllh), verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
-                plt.savefig('plots/FitUnblinding.pdf')
+                if save_name:
+                    plt.savefig('plots/FitUnblinding_'+save_name+'.pdf')
                 plt.show()
                 #diagnostic = False
 
@@ -258,10 +259,18 @@ if __name__ == "__main__":
         action="store_true",
         help='Set to get the p-value of the unblinded data.')
 
+    # Plot saving flag
+    parser.add_argument(
+        '--save',
+        nargs="?",
+        default='',
+        type=str,
+        help='Set to save the most usefull plots.')
+
     args = parser.parse_args()
     if args.bias:
         args.interp = True
-    if len(sys.argv) >= 2 and len(args.files) >= 2:
-        main(args.files, args.interp, args.diagnostic, args.bias, args.unblinded)
+    if len(sys.argv) >= 2:
+        main(args.files, args.save, args.interp, args.diagnostic, args.bias, args.unblinded)
     else:
         parser.print_help()

@@ -26,7 +26,7 @@ from scipy.interpolate import UnivariateSpline
 import numpy as np
 
 
-def main(infile, hide, unblinded):
+def main(infile, hide, unblinded, save_name):
     try:
         data = np.loadtxt(infile)
     except IOError:
@@ -75,7 +75,8 @@ def main(infile, hide, unblinded):
             plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux')
             ax = plt.gca()
             legend = ax.legend(loc='lower center')
-            plt.savefig('plots/TS_distrib.pdf')
+            if save_name:
+                plt.savefig('plots/TS_distrib_'+save_name+'.pdf')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
         if unblinded:
             cl.append(float(len(ts[ts > ts_unblinded])) / float(len(ts)))
@@ -118,7 +119,8 @@ def main(infile, hide, unblinded):
             verticalalignment='top', horizontalalignment='right',
             transform=ax.transAxes,
             color='g', fontsize=18)
-    plt.savefig('plots/Sensitivity.pdf')
+    if save_name:
+        plt.savefig('plots/Sensitivity_'+save_name+'.pdf')
     if not hide:
         plt.show()
 
@@ -148,8 +150,16 @@ if __name__ == "__main__":
         action="store_true",
         help='Set to get the p-value of the unblinded data.')
 
+    # Plot saving flag
+    parser.add_argument(
+        '--save',
+        nargs="?",
+        default='',
+        type=str,
+        help='Set to save the most usefull plots.')
+
     args = parser.parse_args()
-    if len(sys.argv) >= 2 and len(sys.argv) <= 4:
-        main(args.inputfile, args.hide, args.unblinded)
+    if len(sys.argv) >= 2 and len(sys.argv) <= 6:
+        main(args.inputfile, args.hide, args.unblinded, args.save)
     else:
         parser.print_help()

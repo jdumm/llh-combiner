@@ -20,6 +20,8 @@ optional arguments:
                         Set to correct bias of the following files.
   --hide                Set to not show the plots.
   --unblinded           Set to get the p-value of the unblinded data.
+  --save [filename_extension]
+                        Set to save the most useful figures with the 'filename_extension' in their names.
  """
 
 import sys
@@ -28,7 +30,7 @@ from os import system, remove
 from shutil import move
 
 
-def main(files, bias_files, options):
+def main(files, bias_files, save_name, options):
     """Get the sensitivity corresponding to the given arguments."""
     if bias_files:
         print '\nFitting of biases to correct'
@@ -42,7 +44,7 @@ def main(files, bias_files, options):
             error = system(command)
             if error:
                 exit(0)
-            command = 'ipython bias.py -- ' + merged_file + ' ' + bias_file + options['hide']
+            command = 'ipython bias.py -- ' + merged_file + ' ' + bias_file + options['hide'] + bool(save_name)*(" --save "+save_name)
             # print command
             error = system(command)
             if error:
@@ -63,10 +65,11 @@ def main(files, bias_files, options):
 
     print '\nMerging and sensitivity'
     error = system('ipython merge.py -- ' + ' '.join(files) + ' ' + ' '.join(bias_files)
-                   + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['unblinded'] + options['diagnostic'])
+                   + ' test_data/merged_all.txt' + options['interp'] + ' --bias' * bool(bias_files) + options['unblinded'] + options['diagnostic'] + bool(save_name)*(" --save "+save_name))
     if error:
         exit(0)
-    error = system('ipython sensitivity.py -- test_data/merged_all.txt' + options['unblinded'] + options['hide'])
+    print 'ipython sensitivity.py -- test_data/merged_all.txt' + options['unblinded'] + options['hide'] + bool(save_name)*(" --save "+save_name)
+    error = system('ipython sensitivity.py -- test_data/merged_all.txt' + options['unblinded'] + options['hide'] + bool(save_name)*(" --save "+save_name))
     system('rm test_data/merged_all.txt')
 
 if __name__ == "__main__":
@@ -116,6 +119,14 @@ if __name__ == "__main__":
         action="store_true",
         help='Set to get the p-value of the unblinded data.')
 
+    # Plot saving flag
+    parser.add_argument(
+        '--save',
+        nargs="?",
+        default='',
+        type=str,
+        help='Set to save the most usefull plots.')
+
     args = parser.parse_args()
     options = {'interp': ' --interp' * args.interp,
                'diagnostic': ' --diagnostic' * args.diagnostic,
@@ -125,6 +136,6 @@ if __name__ == "__main__":
         args.interp = True
 
     if len(sys.argv) >= 2:
-        main(args.files, args.bias, options)
+        main(args.files, args.bias, args.save, options)
     else:
         parser.print_help()

@@ -34,7 +34,7 @@ def func(x, a_):
     return a_ * x
 
 
-def main(infile, datafile, hide=False):
+def main(infile, datafile, save_name, hide=False):
     try:
         data = np.loadtxt(infile)
     except IOError:
@@ -109,8 +109,9 @@ def main(infile, datafile, hide=False):
     fit_y = [fit_a * x_ for x_ in x]
     plt.plot(x, fit_y, color='k', linestyle='-')
     plt.axis('equal')
-    EXPtopo = datafile[0].split('yr')[1].split('_')[1] # string of the type ICmuons or ANTshowers
-    plt.savefig('plots/bias_'+EXPtopo+'.pdf')
+    if save_name:
+        EXPtopo = datafile[0].split('yr')[1].split('_')[0] # string of the type ICmuons or ANTshowers
+        plt.savefig('plots/bias_'+EXPtopo+'_'+save_name+'.pdf')
 
     plt.figure()
     bins = np.arange(0, 10, 0.5)
@@ -161,8 +162,16 @@ if __name__ == "__main__":
         action="store_true",
         help='Set to not show the plots.')
 
+    # Plot saving flag
+    parser.add_argument(
+        '--save',
+        nargs="?",
+        default='',
+        type=str,
+        help='Set to save the most usefull plots.')
+
     args = parser.parse_args()
-    if (len(sys.argv) >= 2 and len(sys.argv) <= 5):
-        main(args.inputfile, args.datafile, args.hide)
+    if len(sys.argv) >= 2 and len(sys.argv) <= 7:
+        main(args.inputfile, args.datafile, args.save, args.hide)
     else:
         parser.print_help()
