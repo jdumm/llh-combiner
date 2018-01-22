@@ -155,7 +155,7 @@ if __name__ == "__main__":
         help="Path to file to be merged.",
         metavar="FILE")
 
-# Hide flag
+    # Hide flag
     parser.add_argument(
         '--hide',
         default=False,
