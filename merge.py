@@ -21,6 +21,7 @@ optional arguments:
 import sys
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.interpolate import UnivariateSpline
 
 # Flux are in units [1/GeV/cm^2/s] or scaling factors relative to a specified model
@@ -57,9 +58,6 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
         if header != hs[0] and not interpolate:
             print 'Error: Trying non-interpolation combination of files with different sampling definitions.  Set the --interp flag if desired.'
             return 0
-
-    if diagnostic:
-        import matplotlib.pyplot as plt
 
     flux_min = float(hs[0][0])
     flux_max = float(hs[0][1])
@@ -178,16 +176,18 @@ def main(files, interpolate=False, diagnostic=False, bias=False, unblinded=False
                 count_correct = count_correct + 1
 
             of.write("{:.2e} {:.2e} {:.2e}\n".format(trueflux, maxflux, maxllh))  # write the flux and the max TS
-            if diagnostic:  # and maxflux != 0:
+            if diagnostic or (unblinded and line_count == 1):  # and maxflux != 0:
                 plt.figure()
                 for interp in interps:
                     plt.plot(xs, interp, 'r', lw=1.2, alpha=0.7)
                 plt.plot(xs, sum_array, 'r', lw=2.7)
                 coarse_sum_array = np.zeros(len(lines[0][1:]))
                 for line in lines:
-                    plt.plot(x, line[1:], 'ko', ms=3, alpha=0.6)
+                    if not unblinded or not line_count == 1:
+                        plt.plot(x, line[1:], 'ko', ms=3, alpha=0.6)
                     coarse_sum_array += line[1:]
-                plt.plot(x, coarse_sum_array, 'ko', ms=5)
+                if not unblinded or not line_count == 1:
+                    plt.plot(x, coarse_sum_array, 'ko', ms=5)
                 plt.xlabel("flux")
                 plt.ylabel("log-likelihood ratio")
                 ax = plt.gca()
