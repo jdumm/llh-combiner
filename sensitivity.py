@@ -105,6 +105,22 @@ def main(infile, hide, unblinded, save_name):
                 ul = x
                 break
 
+        plt.figure()
+        plt.xlabel('Flux')
+        plt.ylabel('Fraction with TS > unblinded TS')
+        plt.plot(unique_fluxes, cl, 'ko', ms=5)
+        plt.plot(xs, spl_cl(xs), 'r', lw=3)
+        ax = plt.gca()
+        ymin, ymax = ax.get_ylim()
+        plt.plot([ul, ul], [ymin, 0.9], 'g', lw=2)
+        plt.plot([0, ul], [0.9, 0.9], 'g', lw=2)
+        ax.text(0.95, 0.15, 'Upper limit: {:0.2f}'.format(ul),
+            verticalalignment='top', horizontalalignment='right',
+            transform=ax.transAxes,
+            color='g', fontsize=18)
+        if save_name:
+            plt.savefig('plots/UpperLimit_'+save_name+'.pdf')
+
         print 'Fitted flux is', flux_unblinded
         print 'p-value is', p_value * 100, '%'
         print 'Upper limit at 90% confidence level is {:0.2f}'.format(ul)
