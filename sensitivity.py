@@ -25,7 +25,9 @@ optional arguments:
 import sys
 import argparse
 import matplotlib.pyplot as plt
-from scipy.interpolate import UnivariateSpline
+import scipy
+# from scipy.interpolate import UnivariateSpline
+from scipy.optimize import leastsq
 import numpy as np
 
 
@@ -49,7 +51,7 @@ def main(infile, hide, unblinded, save_name):
     bins = np.arange(0, 10, bin_width)
     flux_unblinded = 0
     ts_unblinded = 0
-    ul = 0 # upper limit
+    ul = 0. # upper limit
 
     if unblinded:
         if data[0, 0] != -1:
@@ -69,7 +71,7 @@ def main(infile, hide, unblinded, save_name):
         ts = data[data[:, 0] == flux][:, 2]  # Isolate the list of all TS values for this True Flux
         if flux == 0.:
             plt.hist(ts, bins, normed=True, cumulative=-1, histtype='step', color='r', lw=2, label='Background')
-            
+
             if unblinded:
                 plt.plot([ts_unblinded, ts_unblinded], [0., p_value], 'g', lw=2)
                 plt.plot([0, ts_unblinded], [p_value, p_value], 'g', lw=2, label='p-value: {:0.2f}'.format(p_value))
@@ -77,7 +79,7 @@ def main(infile, hide, unblinded, save_name):
         if flux == 1.:
             plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux')
             ax = plt.gca()
-            legend = ax.legend(loc='lower center')
+            ax.legend(loc='lower center')
             if save_name:
                 plt.savefig('plots/TS_distrib_'+save_name+'.pdf')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
@@ -86,12 +88,23 @@ def main(infile, hide, unblinded, save_name):
         print 'number of entries with flux {} is {} with {}% over the median from background.'.format(flux, len(ts), p * 100)
         ps.append(p)
 
-    # Find the 90% crossing point using the spline interpolation for sensitivity
     xs = np.linspace(unique_fluxes[0], unique_fluxes[-1:], 1000)
-    spl_ps = UnivariateSpline(unique_fluxes, ps, k=3, s=0.1)
+    # Find the 90% crossing point using the spline interpolation for sensitivity
+    # spl_ps = UnivariateSpline(unique_fluxes, ps, k=3, s=0.1)
+    # for x in xs:
+    #     if spl_ps(x) > 0.9:
+    #         sens = x
+    #         break
+
+    # Find the 90% crossing point fitting with erf
+    fitfunc = lambda p, x: scipy.special.erf(p[0]*x+p[1]) # 1-np.exp(p[0]*x+p[1]))*p[2] # Target function
+    errfunc = lambda p, x, y: fitfunc(p, x) - y # Distance to the target function
+    p0 = [1., 1.] # Initial guess for the parameters
+    p1, _ = leastsq(errfunc, p0[:], args=(unique_fluxes, ps))
+    # plt.plot(unique_fluxes, ps, 'ko', xs, fitfunc(p1, xs), "r-", ms=5, lw=3) # Plot of the data and the fit
 
     for x in xs:
-        if spl_ps(x) > 0.9:
+        if fitfunc(p1, x) > 0.9:
             sens = x
             break
 
@@ -99,25 +112,34 @@ def main(infile, hide, unblinded, save_name):
 
     if unblinded:
         # Find the 90% crossing point using the spline interpolation for upper limit
-        spl_cl = UnivariateSpline(unique_fluxes, cl, k=3, s=0.1)
+        # spl_cl = UnivariateSpline(unique_fluxes, cl, k=3, s=0.1)
+        # for x in xs:
+        #     if spl_cl(x) > 0.9:
+        #         ul = x
+        #         break
+
+        # Find the 90% crossing point fitting with erf
+        p2, _ = leastsq(errfunc, p0[:], args=(unique_fluxes, cl))
+
         for x in xs:
-            if spl_cl(x) > 0.9:
+            if fitfunc(p2, x) > 0.9:
                 ul = x
                 break
 
         plt.figure()
         plt.xlabel('Flux')
         plt.ylabel('Fraction with TS > unblinded TS')
-        plt.plot(unique_fluxes, cl, 'ko', ms=5)
-        plt.plot(xs, spl_cl(xs), 'r', lw=3)
+        # plt.plot(unique_fluxes, cl, 'ko', ms=5)
+        # plt.plot(xs, fitfunc(p2, xs), 'r', lw=3)
+        plt.plot(unique_fluxes, cl, 'ko', xs, fitfunc(p2, xs), 'r', ms=5, lw=3) # Plot of the data and the fit
         ax = plt.gca()
-        ymin, ymax = ax.get_ylim()
+        ymin, _ = ax.get_ylim()
         plt.plot([ul, ul], [ymin, 0.9], 'g', lw=2)
         plt.plot([0, ul], [0.9, 0.9], 'g', lw=2)
         ax.text(0.95, 0.15, 'Upper limit: {:0.2f}'.format(ul),
-            verticalalignment='top', horizontalalignment='right',
-            transform=ax.transAxes,
-            color='g', fontsize=18)
+                verticalalignment='top', horizontalalignment='right',
+                transform=ax.transAxes,
+                color='g', fontsize=18)
         if save_name:
             plt.savefig('plots/UpperLimit_'+save_name+'.pdf')
 
@@ -128,10 +150,11 @@ def main(infile, hide, unblinded, save_name):
     plt.figure()
     plt.xlabel('Flux')
     plt.ylabel('Fraction with TS > background median')
-    plt.plot(unique_fluxes, ps, 'ko', ms=5)
-    plt.plot(xs, spl_ps(xs), 'r', lw=3)
+    # plt.plot(unique_fluxes, ps, 'ko', ms=5)
+    # plt.plot(xs, spl_ps(xs), 'r', lw=3)
+    plt.plot(unique_fluxes, ps, 'ko', xs, fitfunc(p1, xs), 'r', ms=5, lw=3) # Plot of the data and the fit
     ax = plt.gca()
-    ymin, ymax = ax.get_ylim()
+    ymin, _ = ax.get_ylim()
     plt.plot([sens, sens], [ymin, 0.9], 'g', lw=2)
     plt.plot([0, sens], [0.9, 0.9], 'g', lw=2)
     ax.text(0.95, 0.15, 'Sensitivity: {:0.2f}'.format(sens),
