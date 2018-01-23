@@ -70,14 +70,14 @@ def main(infile, hide, unblinded, save_name):
     for flux in unique_fluxes:
         ts = data[data[:, 0] == flux][:, 2]  # Isolate the list of all TS values for this True Flux
         if flux == 0.:
-            plt.hist(ts, bins, normed=True, cumulative=-1, histtype='step', color='r', lw=2, label='Background')
+            plt.hist(ts, bins, normed=True, cumulative=-1, histtype='step', color='r', lw=2, label='Background anticumulative')
 
             if unblinded:
                 plt.plot([ts_unblinded, ts_unblinded], [0., p_value], 'g', lw=2)
                 plt.plot([0, ts_unblinded], [p_value, p_value], 'g', lw=2, label='p-value: {:0.2f}'.format(p_value))
 
         if flux == 1.:
-            plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux')
+            plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux cumulative')
             ax = plt.gca()
             ax.legend(loc='lower center')
             if save_name:
