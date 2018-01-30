@@ -46,9 +46,8 @@ def main(infile, hide, unblinded, save_name):
     plt.figure()
     plt.yscale('log')
     plt.xlabel('TS')
-    plt.ylabel('Density probability')
     bin_width = 0.2
-    bins = np.arange(0, 80.1, bin_width)
+    bins = np.arange(0, 80, bin_width)
     flux_unblinded = 0
     ts_unblinded = 0
     ul = 0. # upper limit
@@ -74,16 +73,25 @@ def main(infile, hide, unblinded, save_name):
 
             if unblinded:
                 plt.plot([ts_unblinded, ts_unblinded], [0., p_value], 'g', lw=2)
-                plt.plot([0, ts_unblinded], [p_value, p_value], 'g', lw=2, label='p-value: {:0.2f}'.format(p_value))
+                plt.plot([0, ts_unblinded], [p_value, p_value], 'g', lw=2, label='p-value')
+                ax = plt.gca()
+                ax.text(-0.01, 0.8, '{:0.2f}'.format(p_value),
+                        verticalalignment='center', horizontalalignment='right',
+                        transform=ax.transAxes,
+                        color='g', fontsize=14)
+                # ax.text(0.1, 0., '{:0.2f}'.format(ts_unblinded),
+                #         verticalalignment='bottom', horizontalalignment='center',
+                #         transform=ax.transAxes,
+                #         color='g', fontsize=14)
 
         if flux == 1.:
             plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux cumulative')
             plt.xlim(xmax=10.)
-            plt.ylim(1e-3, 1.0)
+            plt.ylim(ymin=1e-3)
             ax = plt.gca()
             ax.legend(loc='lower center')
             if save_name:
-                plt.savefig('plots/TS_distrib_'+save_name+'.pdf')
+                plt.savefig('plots/TS_distrib_'+save_name+'.png')
         p = float(len(ts[ts > median_bg])) / float(len(ts))  # count how many have TS higher than the median from background
         if unblinded:
             cl.append(float(len(ts[ts > ts_unblinded])) / float(len(ts)))
