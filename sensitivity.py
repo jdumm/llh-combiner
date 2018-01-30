@@ -48,7 +48,7 @@ def main(infile, hide, unblinded, save_name):
     plt.xlabel('TS')
     plt.ylabel('Density probability')
     bin_width = 0.2
-    bins = np.arange(0, 10, bin_width)
+    bins = np.arange(0, 80.1, bin_width)
     flux_unblinded = 0
     ts_unblinded = 0
     ul = 0. # upper limit
@@ -78,6 +78,8 @@ def main(infile, hide, unblinded, save_name):
 
         if flux == 1.:
             plt.hist(ts, bins, normed=True, cumulative=True, histtype='step', color='b', lw=2, label='Model flux cumulative')
+            plt.xlim(xmax=10.)
+            plt.ylim(1e-3, 1.0)
             ax = plt.gca()
             ax.legend(loc='lower center')
             if save_name:
