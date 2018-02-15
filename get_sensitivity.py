@@ -77,6 +77,12 @@ def main(files, bias_files, save_name, options):
         exit(0)
     print 'ipython sensitivity.py -- test_data/merged_all.txt' + options['unblinded'] + options['hide'] + bool(save_name)*(" --save "+save_name)
     error = system('ipython sensitivity.py -- test_data/merged_all.txt' + options['unblinded'] + options['hide'] + bool(save_name)*(" --save "+save_name))
+    if error:
+        exit(0)
+
+    command = 'ipython bias.py -- test_data/merged_all.txt ' + options['hide'] + bool(save_name)*(" --save "+save_name)
+    # print command
+    error = system(command)
     system('rm test_data/merged_all.txt')
 
 if __name__ == "__main__":

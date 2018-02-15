@@ -76,6 +76,7 @@ def main(infile, datafile, save_name, hide=False):
         stds[i] = np.std(dist)
         plt.hist(dist, bins=bins, histtype='step')
         i = i + 1
+    print 'Fitted fluxes with error bars:', [str(fitted_flux) + ' (+' + str(yhighs[index]) + ' -' + str(ylows[index])+ ')' for index, fitted_flux in enumerate(medsv)]
 
     param, _ = curve_fit(func, unique_fluxes, medsv)
     fit_a = param[0]
@@ -113,7 +114,10 @@ def main(infile, datafile, save_name, hide=False):
     plt.plot(x, fit_y, color='k', linestyle='-')
     plt.axis('equal')
     if save_name:
-        EXPtopo = datafile[0].split('yr')[1].split('_')[0] # string of the type ICmuons or ANTshowers
+        if 'merged_all' in infile:
+            EXPtopo = 'All'
+        else:
+            EXPtopo = infile.split('yr')[1].split('_')[0] # string of the type ICmuons or ANTshowers
         plt.savefig('plots/bias_'+EXPtopo+'_'+save_name+'.pdf')
 
     plt.figure()
