@@ -50,6 +50,8 @@ def main(infile, datafile, save_name, hide=False):
     plt.ylabel('N Trials')
     bins = np.arange(-2, 2, 0.25)
     unique_fluxes = np.unique(data[:, 0])  # sorted
+    if -1 in unique_fluxes:
+        unique_fluxes = unique_fluxes[1:]
     # unique_fluxes = unique_fluxes[:9]
 
     print('Sorted list of unique fluxes: {})'.format(unique_fluxes))
