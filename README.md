@@ -50,7 +50,7 @@ optional arguments:
 
 ##### Usage example
 ```
-ipython get_sensitivity.py -- test_data/results_7yrICmuons_KRAg5e7.txt test_data/results_9yrANTshowers_KRAg5e7_2000trials_30sept.txt --bias test_data/results_9yrANTmuons_KRAg5e7_2000trials_30sept.txt --interp --hide
+ipython get_sensitivity.py -- --bias test_data/results_7yrICmuons_KRAg5e7_20180118.txt test_data/results_9yrANTshowers_KRAg5e7_10000trials_16jan.txt test_data/results_9yrANTmuons_KRAg5e7_10000trials_16jan.txt --interp --hide --save test
 ```
 
 ### bias.py
