@@ -188,22 +188,32 @@ def main(files, save_name, interpolate=False, diagnostic=False, bias=False, hide
             of.write("{:.2e} {:.2e} {:.2e}\n".format(trueflux, maxflux, maxllh))  # write the flux and the max TS
             if diagnostic or (unblinded and line_count == 1):  # and maxflux != 0:
                 plt.figure()
+                color = ['green', 'orange', 'r']
+                experiment = ['IceCube muons', 'ANTARES showers', 'ANTARES muons']
+                index = 0
                 for interp in interps:
-                    plt.plot(xs, interp, 'r', lw=1.2, alpha=0.7)
-                plt.plot(xs, sum_array, 'r', lw=2.7)
+                    plt.plot(xs, interp, color=color[index], lw=3, alpha=0.7, label=experiment[index])
+                    index += 1
+                plt.plot(xs, sum_array, 'black', lw=3, label='Combination')
+                plt.legend(loc=8)
                 coarse_sum_array = np.zeros(len(lines[0][1:]))
                 for line in lines:
-                    if not unblinded or not line_count == 1:
-                        plt.plot(x, line[1:], 'ko', ms=3, alpha=0.6)
+                    # if not unblinded or not line_count == 1:
+                    #     plt.plot(x, line[1:], 'ko', ms=3, alpha=0.6)
                     coarse_sum_array += line[1:]
-                if not unblinded or not line_count == 1:
-                    plt.plot(x, coarse_sum_array, 'ko', ms=5)
-                plt.xlabel("flux")
-                plt.ylabel("log-likelihood ratio")
+                # if not unblinded or not line_count == 1:
+                #     plt.plot(x, coarse_sum_array, 'ko', ms=5)
+                plt.xlabel(r"$\Phi_{KRA\gamma}$", fontsize=20)
+                plt.ylabel("log-likelihood ratio", fontsize=19)
                 ax = plt.gca()
                 ymin, ymax = ax.get_ylim()
-                plt.plot([maxflux, maxflux], [ymin, ymax], 'g', lw=3)
-                ax.text(0.15, 0.15, '(max flux, max llh) = ({:0.2}, {:0.2})'.format(maxflux, maxllh), verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
+                xmin, xmax = ax.get_xlim()
+                plt.plot([maxflux, maxflux], [ymin, maxllh], '--', color='silver', lw=1.5)
+                plt.plot([0.0, maxflux], [maxllh, maxllh], '--', color='silver', lw=1.5)
+                # ax.text(0.15, 0.15, '(max flux, max llh) = ({:0.2}, {:0.2})'.format(maxflux, maxllh), verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='g', fontsize=18)
+                ax.text(0.06, 0.06, 'Fitted flux', verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='k', fontsize=18)
+                ax.text(0.0, 0.87, r'TS$_{comb}$', verticalalignment='bottom', horizontalalignment='left', transform=ax.transAxes, color='k', fontsize=18)
+                plt.axis([xmin,xmax*2./3.,ymin/2,ymax])
                 if save_name:
                     plt.savefig('plots/FitUnblinding_'+save_name+'.pdf')
                 if not hide:
