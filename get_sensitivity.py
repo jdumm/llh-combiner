@@ -141,14 +141,18 @@ if __name__ == "__main__":
         help='Set to save the most usefull plots with SAVE as a filename extension.')
 
     args = parser.parse_args()
+    if args.bias:
+        args.interp = True
+
     options = {'interp': ' --interp' * args.interp,
                'diagnostic': ' --diagnostic' * args.diagnostic,
                'hide': ' --hide' * args.hide,
                'unblinded': ' --unblinded' * args.unblinded}
-    if args.bias:
-        args.interp = True
 
-    if len(sys.argv) >= 2:
+    if len(sys.argv) >= 2 and not (args.hide and args.diagnostic):
         main(args.files, args.bias, args.save, options)
+    elif args.hide and args.diagnostic:
+        print 'You should not set hide and diagnostic at the same time'
+        print 'Exiting...'
     else:
         parser.print_help()
