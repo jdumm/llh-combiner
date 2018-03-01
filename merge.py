@@ -214,6 +214,7 @@ def main(files, save_name, interpolate=False, diagnostic=False, bias=False, hide
                 ax.text(0.06, 0.06, 'Fitted flux', verticalalignment='top', horizontalalignment='left', transform=ax.transAxes, color='k', fontsize=18)
                 ax.text(0.0, 0.87, r'TS$_{comb}$', verticalalignment='bottom', horizontalalignment='left', transform=ax.transAxes, color='k', fontsize=18)
                 plt.axis([xmin,xmax*2./3.,ymin/2,ymax])
+                plt.axhline(0, color='k')
                 if save_name:
                     plt.savefig('plots/FitUnblinding_'+save_name+'.pdf')
                 if not hide:
