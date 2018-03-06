@@ -189,7 +189,7 @@ def main(files, save_name, interpolate=False, diagnostic=False, bias=False, hide
             if diagnostic or (unblinded and line_count == 1):  # and maxflux != 0:
                 plt.figure()
                 color = ['green', 'orange', 'r']
-                experiment = ['IceCube muons', 'ANTARES showers', 'ANTARES muons']
+                experiment = ['IceCube tracks', 'ANTARES showers', 'ANTARES tracks']
                 index = 0
                 for interp in interps:
                     plt.plot(xs, interp, color=color[index], lw=3, alpha=0.7, label=experiment[index])
